@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AppGym.Tests\**" />
+    <EmbeddedResource Remove="AppGym.Tests\**" />
+    <None Remove="AppGym.Tests\**" />
+    <Compile Remove="ExcelExporter\**" />
+    <EmbeddedResource Remove="ExcelExporter\**" />
+    <None Remove="ExcelExporter\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AppGym\AppGym.Tests\" />
+  </ItemGroup>
+
+</Project>
