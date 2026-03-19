@@ -127,16 +127,16 @@ namespace AppGym.Forms
                 ("Doanh thu",        revenue.ToString("#,##0") + "đ",   "[$]", Color.FromArgb(230, 126, 34)),
             };
 
-            int xPos = 10, yPos = 10, cardWidth = 220, cardHeight = 130;
+            int xPos = 10, yPos = 10, cardWidth = 195, cardHeight = 130;
             foreach (var card in cards)
             {
                 var p = new Panel { Size = new Size(cardWidth, cardHeight), Location = new Point(xPos, yPos), BackColor = Color.White };
                 p.Controls.Add(new Panel { Size = new Size(6, cardHeight), Location = new Point(0, 0), BackColor = card.color });
-                p.Controls.Add(new Label { Text = card.icon, Font = new Font("Segoe UI", 28), AutoSize = true, Location = new Point(20, 18) });
-                p.Controls.Add(new Label { Text = card.value, Font = new Font("Segoe UI", 22, FontStyle.Bold), ForeColor = card.color, AutoSize = true, Location = new Point(80, 20) });
-                p.Controls.Add(new Label { Text = card.title, Font = new Font("Segoe UI", 10), ForeColor = Color.Gray, AutoSize = true, Location = new Point(20, 90) });
+                p.Controls.Add(new Label { Text = card.icon, Font = new Font("Segoe UI", 14), ForeColor = Color.Gray, AutoSize = true, Location = new Point(15, 10) });
+                p.Controls.Add(new Label { Text = card.value, Font = new Font("Segoe UI", 20, FontStyle.Bold), ForeColor = card.color, AutoSize = true, Location = new Point(15, 42) });
+                p.Controls.Add(new Label { Text = card.title, Font = new Font("Segoe UI", 10), ForeColor = Color.Gray, AutoSize = true, Location = new Point(15, 95) });
                 panelContent.Controls.Add(p);
-                xPos += cardWidth + 15;
+                xPos += cardWidth + 12;
             }
 
             yPos = cardHeight + 40;
