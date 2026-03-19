@@ -5,7 +5,7 @@ namespace AppGym.DataAccess
     public static class DatabaseHelper
     {
         private static string _connectionString =
-            @"Server=(local)\THANHTRA;Database=GymManagementDB;Integrated Security=True;TrustServerCertificate=True;";
+            @"Server=(local)\SQLEXPRESS;Database=GymManagementDB;Integrated Security=True;TrustServerCertificate=True;";
 
         public static string ConnectionString
         {
