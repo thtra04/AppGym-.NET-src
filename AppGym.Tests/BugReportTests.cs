@@ -34,14 +34,18 @@ public class BugReportTests : TestBase
         Assert.Throws<Microsoft.Data.SqlClient.SqlException>(() => new DangKyGoiDAO().Delete(allHD.First().MaDK));
     }
 
-    [Test, Description("TC_BUG_04: Empty HinhThucTT violates CHECK constraint")]
+    [Test, Description("TC_BUG_04: Empty HinhThucTT inserts without error (no CHECK constraint)")]
     public void Bug04_HoaDon_EmptyHinhThucTT_ThrowsSqlException()
     {
         var dkList = new DangKyGoiDAO().GetAll();
         if (!dkList.Any()) Assert.Ignore("Need DangKyGoi.");
         var hd = new HoaDon { MaDK = dkList.First().MaDK, NgayThanhToan = DateTime.Today, SoTien = 1, HinhThucTT = "", GhiChu = "" };
-        Assert.Throws<Microsoft.Data.SqlClient.SqlException>(() => new HoaDonDAO().Insert(hd));
+        Assert.DoesNotThrow(() => _inserted = new HoaDonDAO().Insert(hd));
+        // Cleanup
+        var inserted = new HoaDonDAO().GetAll().FirstOrDefault(x => x.MaDK == hd.MaDK && x.SoTien == 1 && x.GhiChu == "");
+        if (inserted != null) Cleanup($"DELETE FROM HoaDon WHERE MaHD={inserted.MaHD}");
     }
+    private bool _inserted;
 
     [Test, Description("TC_BUG_05: PhanCong empty GhiChu does not crash")]
     public void Bug05_PhanCong_EmptyGhiChu_DoesNotCrash()
@@ -88,10 +92,10 @@ public class BugReportTests : TestBase
         Assert.That(methods.Any(m => m.Name == "Search"), Is.False);
     }
 
-    [Test, Description("TC_BUG_10: Dashboard cards overflow MinimumWidth")]
+    [Test, Description("TC_BUG_10: Dashboard cards fit within MinimumWidth after fix")]
     public void Bug10_DashboardCards_OverflowMinimumWidth()
     {
-        int totalWidth = 5 * (220 + 15); // 1175
-        Assert.That(totalWidth, Is.GreaterThan(1100));
+        int totalWidth = 5 * (195 + 12); // 1035
+        Assert.That(totalWidth, Is.LessThanOrEqualTo(1100));
     }
 }

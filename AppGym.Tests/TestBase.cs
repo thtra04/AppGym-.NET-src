@@ -11,7 +11,7 @@ public abstract class TestBase
 {
     // ?? ??i connection string n?u c?n ??????????????????????????????????
     protected const string ConnStr =
-        @"Server=DESKTOP-O5A1RCH\THANHTRA;Database=GymManagementDB;Trusted_Connection=True;TrustServerCertificate=True;";
+        @"Server=(local)\SQLEXPRESS;Database=GymManagementDB;Trusted_Connection=True;TrustServerCertificate=True;";
 
     [OneTimeSetUp]
     public virtual void GlobalSetup()

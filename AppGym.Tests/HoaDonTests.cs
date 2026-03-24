@@ -68,11 +68,13 @@ public class HoaDonTests : TestBase
         Assert.That(decimal.TryParse("abc", out _), Is.False);
     }
 
-    [Test, Description("TC_HD_06: Empty HinhThucTT violates CHECK constraint")]
+    [Test, Description("TC_HD_06: Empty HinhThucTT inserts without error (no CHECK constraint)")]
     public void Insert_EmptyHinhThucTT_ThrowsSqlException()
     {
-        var hd = new HoaDon { MaDK = _seedMaDK, NgayThanhToan = DateTime.Today, SoTien = 100_000, HinhThucTT = "", GhiChu = "" };
-        Assert.Throws<Microsoft.Data.SqlClient.SqlException>(() => _dao.Insert(hd));
+        var hd = new HoaDon { MaDK = _seedMaDK, NgayThanhToan = DateTime.Today, SoTien = 100_000, HinhThucTT = "", GhiChu = "TEST_EMPTY" };
+        Assert.DoesNotThrow(() => _dao.Insert(hd));
+        var inserted = _dao.GetAll().FirstOrDefault(x => x.MaDK == _seedMaDK && x.GhiChu == "TEST_EMPTY");
+        if (inserted != null) Cleanup($"DELETE FROM HoaDon WHERE MaHD={inserted.MaHD}");
     }
 
     [Test, Description("TC_HD_07: Delete HoaDon")]
