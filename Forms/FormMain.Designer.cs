@@ -23,6 +23,7 @@
 
         private void InitializeComponent()
         {
+            this.components     = new System.ComponentModel.Container();
             this.panelSidebar   = new Panel();
             this.panelLogo      = new Panel();
             this.lblLogo        = new Label();
@@ -32,7 +33,7 @@
             this.lblUserName    = new Label();
             this.panelSeparator = new Panel();
             this.panelContent   = new Panel();
-            this.userMenu       = new ContextMenuStrip();
+            this.userMenu       = new ContextMenuStrip(this.components);
 
             this.panelSidebar.SuspendLayout();
             this.panelLogo.SuspendLayout();
@@ -102,7 +103,6 @@
             this.lblUserName.Location = new Point(900, 20);
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Text = "";
-            this.lblUserName.Cursor = Cursors.Hand;
 
             // panelSeparator
             this.panelSeparator.BackColor = Color.FromArgb(220, 220, 220);

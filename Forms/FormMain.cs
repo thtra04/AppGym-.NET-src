@@ -29,6 +29,7 @@ namespace AppGym.Forms
             userMenu.Items.AddRange(new ToolStripItem[] { tsAccount, tsSep, tsLogout });
 
             // lblUserName click & hover
+            lblUserName.Cursor = Cursors.Hand;
             lblUserName.Click += LblUserName_Click;
             lblUserName.MouseEnter += (s, e) => { lblUserName.ForeColor = Color.FromArgb(52, 152, 219); lblUserName.Font = new Font("Segoe UI", 10F, FontStyle.Underline); };
             lblUserName.MouseLeave += (s, e) => { lblUserName.ForeColor = Color.FromArgb(80, 80, 80); lblUserName.Font = new Font("Segoe UI", 10F); };
