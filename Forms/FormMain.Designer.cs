@@ -13,6 +13,7 @@
         private Label lblUserName;
         private Panel panelSeparator;
         private Panel panelContent;
+        private ContextMenuStrip userMenu;
 
         protected override void Dispose(bool disposing)
         {
@@ -31,6 +32,7 @@
             this.lblUserName    = new Label();
             this.panelSeparator = new Panel();
             this.panelContent   = new Panel();
+            this.userMenu       = new ContextMenuStrip();
 
             this.panelSidebar.SuspendLayout();
             this.panelLogo.SuspendLayout();
@@ -92,14 +94,31 @@
             this.lblPageTitle.Name = "lblPageTitle";
             this.lblPageTitle.Text = "Tổng quan";
 
+            // userMenu
+            this.userMenu.Font = new Font("Segoe UI", 10F);
+            this.userMenu.ShowImageMargin = false;
+            var tsAccount = new ToolStripMenuItem("Quản lý tài khoản");
+            tsAccount.Padding = new Padding(8, 6, 8, 6);
+            tsAccount.Click += TsAccount_Click;
+            var tsSep = new ToolStripSeparator();
+            var tsLogout = new ToolStripMenuItem("Đăng xuất");
+            tsLogout.Padding = new Padding(8, 6, 8, 6);
+            tsLogout.ForeColor = Color.FromArgb(220, 53, 69);
+            tsLogout.Click += (s, e) => BtnLogout_Click(s, e);
+            this.userMenu.Items.AddRange(new ToolStripItem[] { tsAccount, tsSep, tsLogout });
+
             // lblUserName
             this.lblUserName.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             this.lblUserName.AutoSize = true;
             this.lblUserName.Font = new Font("Segoe UI", 10F);
-            this.lblUserName.ForeColor = Color.Gray;
+            this.lblUserName.ForeColor = Color.FromArgb(80, 80, 80);
             this.lblUserName.Location = new Point(900, 20);
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Text = "";
+            this.lblUserName.Cursor = Cursors.Hand;
+            this.lblUserName.Click += LblUserName_Click;
+            this.lblUserName.MouseEnter += (s, e) => { lblUserName.ForeColor = Color.FromArgb(52, 152, 219); lblUserName.Font = new Font("Segoe UI", 10F, FontStyle.Underline); };
+            this.lblUserName.MouseLeave += (s, e) => { lblUserName.ForeColor = Color.FromArgb(80, 80, 80); lblUserName.Font = new Font("Segoe UI", 10F); };
 
             // ?? panelSeparator ?????????????????????????????
             this.panelSeparator.BackColor = Color.FromArgb(220, 220, 220);

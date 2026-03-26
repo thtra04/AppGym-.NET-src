@@ -32,5 +32,18 @@ namespace AppGym.DataAccess
             }
             return null;
         }
+
+        public void ChangePassword(int maTK, string newPassword)
+        {
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+            using var cmd = new SqlCommand(
+                @"UPDATE TaiKhoan SET MatKhauHash = HASHBYTES('SHA2_512',
+                  CONVERT(varbinary(200), CAST(@pwd AS varchar(100)) + '|' + CONVERT(varchar(50), CAST(Salt AS UNIQUEIDENTIFIER))))
+                  WHERE MaTK = @maTK", conn);
+            cmd.Parameters.AddWithValue("@maTK", maTK);
+            cmd.Parameters.AddWithValue("@pwd", newPassword);
+            cmd.ExecuteNonQuery();
+        }
     }
 }

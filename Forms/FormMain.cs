@@ -89,6 +89,143 @@ namespace AppGym.Forms
             }
         }
 
+        private void LblUserName_Click(object? sender, EventArgs e)
+        {
+            userMenu.Show(lblUserName, new Point(0, lblUserName.Height));
+        }
+
+        private void TsAccount_Click(object? sender, EventArgs e)
+        {
+            ShowTaiKhoan();
+        }
+
+        // ==================== TAI KHOAN ====================
+        private void ShowTaiKhoan()
+        {
+            ClearContent();
+            SetPageTitle("Quản lý tài khoản");
+
+            var panel = new Panel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(30) };
+            panelContent.Controls.Add(panel);
+
+            var lblTitle = new Label
+            {
+                Text = "Thông tin tài khoản",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = Color.FromArgb(44, 62, 80),
+                AutoSize = true,
+                Location = new Point(30, 20)
+            };
+            panel.Controls.Add(lblTitle);
+
+            int y = 70;
+            var fields = new (string label, string value)[]
+            {
+                ("Mã tài khoản:", _currentUser.MaTK.ToString()),
+                ("Tên đăng nhập:", _currentUser.TenDangNhap),
+                ("Họ tên:", _currentUser.HoTen),
+                ("Vai trò:", _currentUser.VaiTro),
+                ("Trạng thái:", _currentUser.TrangThai ? "Đang hoạt động" : "Bị khóa"),
+                ("Ngày tạo:", _currentUser.TaoLuc?.ToString("dd/MM/yyyy HH:mm") ?? "N/A"),
+            };
+
+            foreach (var field in fields)
+            {
+                panel.Controls.Add(new Label
+                {
+                    Text = field.label,
+                    Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(80, 80, 80),
+                    AutoSize = true,
+                    Location = new Point(30, y)
+                });
+                panel.Controls.Add(new Label
+                {
+                    Text = field.value,
+                    Font = new Font("Segoe UI", 11),
+                    ForeColor = Color.FromArgb(44, 62, 80),
+                    AutoSize = true,
+                    Location = new Point(200, y)
+                });
+                y += 40;
+            }
+
+            var btnChangePass = new Button
+            {
+                Text = "Đổi mật khẩu",
+                Size = new Size(160, 42),
+                Location = new Point(30, y + 20),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(52, 152, 219),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnChangePass.FlatAppearance.BorderSize = 0;
+            btnChangePass.Click += BtnChangePass_Click;
+            panel.Controls.Add(btnChangePass);
+        }
+
+        private void BtnChangePass_Click(object? sender, EventArgs e)
+        {
+            using var dlg = new Form
+            {
+                Text = "Đổi mật khẩu",
+                Size = new Size(400, 280),
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                BackColor = Color.White
+            };
+
+            var lblOld = new Label { Text = "Mật khẩu cũ:", Location = new Point(20, 25), AutoSize = true, Font = new Font("Segoe UI", 10) };
+            var txtOld = new TextBox { Location = new Point(20, 50), Size = new Size(340, 30), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
+            var lblNew = new Label { Text = "Mật khẩu mới:", Location = new Point(20, 90), AutoSize = true, Font = new Font("Segoe UI", 10) };
+            var txtNew = new TextBox { Location = new Point(20, 115), Size = new Size(340, 30), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
+            var lblConfirm = new Label { Text = "Xác nhận mật khẩu:", Location = new Point(20, 155), AutoSize = true, Font = new Font("Segoe UI", 10) };
+            var txtConfirm = new TextBox { Location = new Point(20, 180), Size = new Size(340, 30), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
+
+            var btnSave = new Button
+            {
+                Text = "Lưu", Size = new Size(100, 38), Location = new Point(260, 220),
+                FlatStyle = FlatStyle.Flat, BackColor = Color.FromArgb(39, 174, 96),
+                ForeColor = Color.White, Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            };
+            btnSave.FlatAppearance.BorderSize = 0;
+
+            btnSave.Click += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(txtOld.Text) || string.IsNullOrWhiteSpace(txtNew.Text))
+                {
+                    MessageBox.Show("Vui lòng nhập đầy đủ thông tin!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                if (txtNew.Text != txtConfirm.Text)
+                {
+                    MessageBox.Show("Mật khẩu xác nhận không khớp!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                // Verify old password
+                var verify = new TaiKhoanDAO().Login(_currentUser.TenDangNhap, txtOld.Text);
+                if (verify == null)
+                {
+                    MessageBox.Show("Mật khẩu cũ không đúng!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                try
+                {
+                    new TaiKhoanDAO().ChangePassword(_currentUser.MaTK, txtNew.Text);
+                    MessageBox.Show("Đổi mật khẩu thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    dlg.Close();
+                }
+                catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
+            };
+
+            dlg.Controls.AddRange(new Control[] { lblOld, txtOld, lblNew, txtNew, lblConfirm, txtConfirm, btnSave });
+            dlg.ShowDialog();
+        }
+
         private void SetPageTitle(string title) => lblPageTitle.Text = title;
 
         private void ClearContent()
