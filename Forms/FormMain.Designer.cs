@@ -39,7 +39,7 @@
             this.panelTopBar.SuspendLayout();
             this.SuspendLayout();
 
-            // ?? panelSidebar ???????????????????????????????
+            // panelSidebar
             this.panelSidebar.BackColor = Color.FromArgb(30, 39, 73);
             this.panelSidebar.Controls.Add(this.btnLogout);
             this.panelSidebar.Controls.Add(this.panelLogo);
@@ -77,7 +77,7 @@
             this.btnLogout.TextAlign = ContentAlignment.MiddleLeft;
             this.btnLogout.Click += new EventHandler(this.BtnLogout_Click);
 
-            // ?? panelTopBar ????????????????????????????????
+            // panelTopBar
             this.panelTopBar.BackColor = Color.White;
             this.panelTopBar.Controls.Add(this.lblUserName);
             this.panelTopBar.Controls.Add(this.lblPageTitle);
@@ -92,20 +92,7 @@
             this.lblPageTitle.ForeColor = Color.FromArgb(44, 62, 80);
             this.lblPageTitle.Location = new Point(20, 16);
             this.lblPageTitle.Name = "lblPageTitle";
-            this.lblPageTitle.Text = "Tổng quan";
-
-            // userMenu
-            this.userMenu.Font = new Font("Segoe UI", 10F);
-            this.userMenu.ShowImageMargin = false;
-            var tsAccount = new ToolStripMenuItem("Quản lý tài khoản");
-            tsAccount.Padding = new Padding(8, 6, 8, 6);
-            tsAccount.Click += TsAccount_Click;
-            var tsSep = new ToolStripSeparator();
-            var tsLogout = new ToolStripMenuItem("Đăng xuất");
-            tsLogout.Padding = new Padding(8, 6, 8, 6);
-            tsLogout.ForeColor = Color.FromArgb(220, 53, 69);
-            tsLogout.Click += (s, e) => BtnLogout_Click(s, e);
-            this.userMenu.Items.AddRange(new ToolStripItem[] { tsAccount, tsSep, tsLogout });
+            this.lblPageTitle.Text = "T\u1ED5ng quan";
 
             // lblUserName
             this.lblUserName.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -116,24 +103,21 @@
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.Text = "";
             this.lblUserName.Cursor = Cursors.Hand;
-            this.lblUserName.Click += LblUserName_Click;
-            this.lblUserName.MouseEnter += (s, e) => { lblUserName.ForeColor = Color.FromArgb(52, 152, 219); lblUserName.Font = new Font("Segoe UI", 10F, FontStyle.Underline); };
-            this.lblUserName.MouseLeave += (s, e) => { lblUserName.ForeColor = Color.FromArgb(80, 80, 80); lblUserName.Font = new Font("Segoe UI", 10F); };
 
-            // ?? panelSeparator ?????????????????????????????
+            // panelSeparator
             this.panelSeparator.BackColor = Color.FromArgb(220, 220, 220);
             this.panelSeparator.Dock = DockStyle.Top;
             this.panelSeparator.Height = 1;
             this.panelSeparator.Name = "panelSeparator";
 
-            // ?? panelContent ???????????????????????????????
+            // panelContent
             this.panelContent.AutoScroll = true;
             this.panelContent.BackColor = Color.FromArgb(245, 246, 250);
             this.panelContent.Dock = DockStyle.Fill;
             this.panelContent.Name = "panelContent";
             this.panelContent.Padding = new Padding(20);
 
-            // ?? FormMain ???????????????????????????????????
+            // FormMain
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(245, 246, 250);
@@ -145,7 +129,7 @@
             this.MinimumSize = new Size(1100, 650);
             this.Name = "FormMain";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = "GYM MANAGER - Quản lý phòng tập";
+            this.Text = "GYM MANAGER - Qu\u1EA3n l\u00FD ph\u00F2ng t\u1EADp";
 
             this.panelSidebar.ResumeLayout(false);
             this.panelLogo.ResumeLayout(false);

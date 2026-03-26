@@ -14,6 +14,25 @@ namespace AppGym.Forms
             _currentUser = user;
             InitializeComponent();
             lblUserName.Text = $"{_currentUser.HoTen} ({_currentUser.VaiTro})";
+
+            // Setup user dropdown menu
+            userMenu.Font = new Font("Segoe UI", 10F);
+            userMenu.ShowImageMargin = false;
+            var tsAccount = new ToolStripMenuItem("Quản lý tài khoản");
+            tsAccount.Padding = new Padding(8, 6, 8, 6);
+            tsAccount.Click += TsAccount_Click;
+            var tsSep = new ToolStripSeparator();
+            var tsLogout = new ToolStripMenuItem("Đăng xuất");
+            tsLogout.Padding = new Padding(8, 6, 8, 6);
+            tsLogout.ForeColor = Color.FromArgb(220, 53, 69);
+            tsLogout.Click += (s, e) => BtnLogout_Click(s, e);
+            userMenu.Items.AddRange(new ToolStripItem[] { tsAccount, tsSep, tsLogout });
+
+            // lblUserName click & hover
+            lblUserName.Click += LblUserName_Click;
+            lblUserName.MouseEnter += (s, e) => { lblUserName.ForeColor = Color.FromArgb(52, 152, 219); lblUserName.Font = new Font("Segoe UI", 10F, FontStyle.Underline); };
+            lblUserName.MouseLeave += (s, e) => { lblUserName.ForeColor = Color.FromArgb(80, 80, 80); lblUserName.Font = new Font("Segoe UI", 10F); };
+
             BuildMenuButtons();
             Load += (s, e) => ShowDashboard();
             Resize += (s, e) => lblUserName.Location = new Point(panelTopBar.Width - lblUserName.Width - 30, 20);
@@ -21,21 +40,25 @@ namespace AppGym.Forms
 
         private void BuildMenuButtons()
         {
-            var menuItems = new (string text, string icon, Action action)[]
+            var allMenuItems = new (string text, string icon, Action action, bool adminOnly)[]
             {
-                ("Tổng quan",        "\u25A3", ShowDashboard),
-                ("Học viên",         "\u263A", ShowHocVien),
-                ("Huấn luyện viên",  "\u2605", ShowHuanLuyenVien),
-                ("Gói tập",          "\u25C6", ShowGoiTap),
-                ("Đăng ký gói",      "\u25B6", ShowDangKyGoi),
-                ("Phân công PT",     "\u2611", ShowPhanCong),
-                ("Hóa đơn",          "\u25B2", ShowHoaDon),
-                ("Ca làm",           "\u25CB", ShowCaLam),
+                ("Tổng quan",        "\u25A3", ShowDashboard,      false),
+                ("Học viên",         "\u263A", ShowHocVien,         false),
+                ("Huấn luyện viên",  "\u2605", ShowHuanLuyenVien,  true),
+                ("Gói tập",          "\u25C6", ShowGoiTap,          false),
+                ("Đăng ký gói",      "\u25B6", ShowDangKyGoi,       false),
+                ("Phân công PT",     "\u2611", ShowPhanCong,        true),
+                ("Hóa đơn",          "\u25B2", ShowHoaDon,          true),
+                ("Ca làm",           "\u25CB", ShowCaLam,           true),
             };
 
+            bool isAdmin = _currentUser.VaiTro == "Admin";
+
             int yPos = 95;
-            foreach (var item in menuItems)
+            foreach (var item in allMenuItems)
             {
+                if (item.adminOnly && !isAdmin) continue;
+
                 var btn = new Button
                 {
                     Text      = $"  {item.icon}   {item.text}",
