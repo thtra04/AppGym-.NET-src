@@ -71,7 +71,7 @@
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Padding = new Padding(15, 0, 0, 0);
             this.btnLogout.Size = new Size(240, 48);
-            this.btnLogout.Text = "  [X]   Đăng xuất";
+            this.btnLogout.Text = "  \u2716   \u0110\u0103ng xu\u1EA5t";
             this.btnLogout.TextAlign = ContentAlignment.MiddleLeft;
             this.btnLogout.Click += new EventHandler(this.BtnLogout_Click);
 

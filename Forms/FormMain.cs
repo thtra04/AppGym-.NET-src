@@ -23,14 +23,14 @@ namespace AppGym.Forms
         {
             var menuItems = new (string text, string icon, Action action)[]
             {
-                ("Tổng quan",        "[*]", ShowDashboard),
-                ("Học viên",         "[H]", ShowHocVien),
-                ("Huấn luyện viên",  "[V]", ShowHuanLuyenVien),
-                ("Gói tập",          "[G]", ShowGoiTap),
-                ("Đăng ký gói",      "[D]", ShowDangKyGoi),
-                ("Phân công PT",     "[P]", ShowPhanCong),
-                ("Hóa đơn",          "[$]", ShowHoaDon),
-                ("Ca làm",           "[C]", ShowCaLam),
+                ("Tổng quan",        "\u25A3", ShowDashboard),
+                ("Học viên",         "\u263A", ShowHocVien),
+                ("Huấn luyện viên",  "\u2605", ShowHuanLuyenVien),
+                ("Gói tập",          "\u25C6", ShowGoiTap),
+                ("Đăng ký gói",      "\u25B6", ShowDangKyGoi),
+                ("Phân công PT",     "\u2611", ShowPhanCong),
+                ("Hóa đơn",          "\u25B2", ShowHoaDon),
+                ("Ca làm",           "\u25CB", ShowCaLam),
             };
 
             int yPos = 95;
@@ -118,33 +118,53 @@ namespace AppGym.Forms
             }
             catch { }
 
+            string fmtRev;
+            if (revenue >= 1_000_000_000) fmtRev = (revenue / 1_000_000_000m).ToString("#,##0.#") + " t\u1EF7";
+            else if (revenue >= 1_000_000) fmtRev = (revenue / 1_000_000m).ToString("#,##0.#") + " tr";
+            else if (revenue >= 1_000) fmtRev = (revenue / 1_000m).ToString("#,##0") + "K";
+            else fmtRev = revenue.ToString("#,##0") + "\u0111";
+
             var cards = new (string title, string value, string icon, Color color)[]
             {
-                ("Học viên",         hvCount.ToString(),                "[H]", Color.FromArgb(52, 152, 219)),
-                ("Huấn luyện viên",  hlvCount.ToString(),               "[V]", Color.FromArgb(46, 204, 113)),
-                ("Gói tập",          goiCount.ToString(),               "[G]", Color.FromArgb(155, 89, 182)),
-                ("Đăng ký đang HĐ",  dkCount.ToString(),                "[D]", Color.FromArgb(241, 196, 15)),
-                ("Doanh thu",        revenue.ToString("#,##0") + "đ",   "[$]", Color.FromArgb(230, 126, 34)),
+                ("H\u1ECDc vi\u00EAn",         hvCount.ToString(),    "\u263A", Color.FromArgb(52, 152, 219)),
+                ("Hu\u1EA5n luy\u1EC7n vi\u00EAn",  hlvCount.ToString(), "\u2605", Color.FromArgb(46, 204, 113)),
+                ("G\u00F3i t\u1EADp",          goiCount.ToString(),   "\u25C6", Color.FromArgb(155, 89, 182)),
+                ("\u0110\u0103ng k\u00FD \u0111ang H\u0110", dkCount.ToString(), "\u25B6", Color.FromArgb(241, 196, 15)),
+                ("Doanh thu",        fmtRev,                          "\u25B2", Color.FromArgb(230, 126, 34)),
             };
 
-            int xPos = 10, yPos = 10, cardWidth = 195, cardHeight = 130;
+            int contentW = panelContent.ClientSize.Width - 40;
+            int cardGap = 15;
+            int cardWidth = (contentW - cardGap * 4) / 5;
+            if (cardWidth < 150) cardWidth = 150;
+            int cardHeight = 140;
+
+            int xPos = 10, yPos = 10;
             foreach (var card in cards)
             {
+                var shadow = new Panel { Size = new Size(cardWidth + 2, cardHeight + 2), Location = new Point(xPos - 1, yPos - 1), BackColor = Color.FromArgb(215, 218, 225) };
+                panelContent.Controls.Add(shadow);
+
                 var p = new Panel { Size = new Size(cardWidth, cardHeight), Location = new Point(xPos, yPos), BackColor = Color.White };
-                p.Controls.Add(new Panel { Size = new Size(6, cardHeight), Location = new Point(0, 0), BackColor = card.color });
-                p.Controls.Add(new Label { Text = card.icon, Font = new Font("Segoe UI", 14), ForeColor = Color.Gray, AutoSize = true, Location = new Point(15, 10) });
-                p.Controls.Add(new Label { Text = card.value, Font = new Font("Segoe UI", 20, FontStyle.Bold), ForeColor = card.color, AutoSize = true, Location = new Point(15, 42) });
-                p.Controls.Add(new Label { Text = card.title, Font = new Font("Segoe UI", 10), ForeColor = Color.Gray, AutoSize = true, Location = new Point(15, 95) });
+                p.Controls.Add(new Panel { Size = new Size(5, cardHeight), Location = new Point(0, 0), BackColor = card.color });
+                p.Controls.Add(new Label { Text = card.icon, Font = new Font("Segoe UI", 20), ForeColor = card.color, AutoSize = true, Location = new Point(16, 12), BackColor = Color.Transparent });
+                p.Controls.Add(new Label { Text = card.value, Font = new Font("Segoe UI", 22, FontStyle.Bold), ForeColor = card.color, AutoSize = true, Location = new Point(16, 50), MaximumSize = new Size(cardWidth - 25, 0), BackColor = Color.Transparent });
+                p.Controls.Add(new Label { Text = card.title, Font = new Font("Segoe UI", 9.5f), ForeColor = Color.FromArgb(120, 130, 140), AutoSize = true, Location = new Point(16, 105), BackColor = Color.Transparent });
+
                 panelContent.Controls.Add(p);
-                xPos += cardWidth + 12;
+                p.BringToFront();
+                xPos += cardWidth + cardGap;
             }
 
-            yPos = cardHeight + 40;
-            panelContent.Controls.Add(new Label { Text = "Đăng ký gần đây", Font = new Font("Segoe UI", 14, FontStyle.Bold), ForeColor = Color.FromArgb(44, 62, 80), AutoSize = true, Location = new Point(10, yPos) });
+            yPos = cardHeight + 35;
+            var lblSection = new Label { Text = "\u2611  \u0110\u0103ng k\u00FD g\u1EA7n \u0111\u00E2y", Font = new Font("Segoe UI", 13, FontStyle.Bold), ForeColor = Color.FromArgb(44, 62, 80), AutoSize = true, Location = new Point(10, yPos) };
+            panelContent.Controls.Add(lblSection);
+            lblSection.BringToFront();
 
-            var dgv = new DataGridView { Location = new Point(10, yPos + 40), Size = new Size(panelContent.Width - 60, 300), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right };
+            var dgv = new DataGridView { Location = new Point(10, yPos + 40), Size = new Size(panelContent.ClientSize.Width - 60, 320), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right };
             UIHelper.StyleDataGridView(dgv);
             panelContent.Controls.Add(dgv);
+            dgv.BringToFront();
 
             try
             {
@@ -152,13 +172,13 @@ namespace AppGym.Forms
                 dgv.DataSource = list.Take(10).ToList();
                 dgv.Columns["MaHV"].Visible = false;
                 dgv.Columns["MaGoi"].Visible = false;
-                dgv.Columns["MaDK"].HeaderText = "Mã ĐK";
-                dgv.Columns["TenHV"].HeaderText = "Học viên";
-                dgv.Columns["TenGoi"].HeaderText = "Gói tập";
-                dgv.Columns["NgayBatDau"].HeaderText = "Ngày BĐ";
-                dgv.Columns["NgayHetHan"].HeaderText = "Ngày HH";
-                dgv.Columns["TrangThai"].HeaderText = "Trạng thái";
-                dgv.Columns["GhiChu"].HeaderText = "Ghi chú";
+                dgv.Columns["MaDK"].HeaderText = "M\u00E3 \u0110K";
+                dgv.Columns["TenHV"].HeaderText = "H\u1ECDc vi\u00EAn";
+                dgv.Columns["TenGoi"].HeaderText = "G\u00F3i t\u1EADp";
+                dgv.Columns["NgayBatDau"].HeaderText = "Ng\u00E0y B\u0110";
+                dgv.Columns["NgayHetHan"].HeaderText = "Ng\u00E0y HH";
+                dgv.Columns["TrangThai"].HeaderText = "Tr\u1EA1ng th\u00E1i";
+                dgv.Columns["GhiChu"].HeaderText = "Ghi ch\u00FA";
             }
             catch { }
         }
