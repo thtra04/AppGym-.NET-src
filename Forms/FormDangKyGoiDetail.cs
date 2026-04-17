@@ -7,6 +7,7 @@ namespace AppGym.Forms
     public partial class FormDangKyGoiDetail : Form
     {
         private DangKyGoi? _dk;
+        private List<GoiTap> _goiTapList = new();
 
         public FormDangKyGoiDetail(DangKyGoi? dk)
         {
@@ -14,7 +15,13 @@ namespace AppGym.Forms
             InitializeComponent();
             Text = _dk == null ? "Thêm Đăng ký gói" : "Sửa Đăng ký gói";
             LoadCombos();
-            if (dk != null) LoadData(dk);
+            if (dk != null)
+            {
+                LoadData(dk);
+            }
+
+            cboGoiTap.SelectedIndexChanged += (s, e) => UpdateNgayHetHan();
+            dtpBatDau.ValueChanged += (s, e) => UpdateNgayHetHan();
         }
 
         private void LoadCombos()
@@ -26,10 +33,10 @@ namespace AppGym.Forms
                 cboHocVien.ValueMember = "MaHV";
                 cboHocVien.DataSource = hvList;
 
-                var gtList = new GoiTapDAO().GetAll();
+                _goiTapList = new GoiTapDAO().GetAll();
                 cboGoiTap.DisplayMember = "TenGoi";
                 cboGoiTap.ValueMember = "MaGoi";
-                cboGoiTap.DataSource = gtList;
+                cboGoiTap.DataSource = _goiTapList;
             }
             catch { }
         }
@@ -40,8 +47,15 @@ namespace AppGym.Forms
             cboGoiTap.SelectedValue = dk.MaGoi;
             if (dk.NgayBatDau.HasValue) dtpBatDau.Value = dk.NgayBatDau.Value;
             if (dk.NgayHetHan.HasValue) dtpHetHan.Value = dk.NgayHetHan.Value;
-            cboTrangThai.SelectedItem = dk.TrangThai;
             txtGhiChu.Text = dk.GhiChu;
+        }
+
+        private void UpdateNgayHetHan()
+        {
+            if (cboGoiTap.SelectedItem is GoiTap selectedGoi && selectedGoi.ThoiHan.HasValue)
+            {
+                dtpHetHan.Value = dtpBatDau.Value.Date.AddDays(selectedGoi.ThoiHan.Value);
+            }
         }
 
         private void BtnSave_Click(object? sender, EventArgs e)
@@ -57,7 +71,13 @@ namespace AppGym.Forms
             dk.MaGoi = (int)cboGoiTap.SelectedValue;
             dk.NgayBatDau = dtpBatDau.Value.Date;
             dk.NgayHetHan = dtpHetHan.Value.Date;
-            dk.TrangThai = cboTrangThai.SelectedItem?.ToString() ?? "Đang hoạt động";
+
+            if (dk.NgayHetHan < dk.NgayBatDau)
+            {
+                MessageBox.Show("Ngày hết hạn phải sau ngày bắt đầu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             dk.GhiChu = txtGhiChu.Text.Trim();
 
             var dao = new DangKyGoiDAO();
@@ -81,11 +101,6 @@ namespace AppGym.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
-        }
-
-        private void lblHocVien_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

@@ -46,10 +46,6 @@ namespace ExcelExporterApp
                         "TenDangNhap=admin\nMatKhau=''",
                         "Hiển thị cảnh báo 'Vui lòng nhập đầy đủ thông tin!'",
                         "","TenDangNhap=admin | MatKhau=''"),
-                    new("TC_LOGIN_05","Tài khoản bị vô hiệu hóa (TrangThai=0)",
-                        "TenDangNhap=user_bi_khoa\nMatKhau=123",
-                        "Đăng nhập thất bại, không mở FormMain",
-                        "Có tài khoản TrangThai=0 trong DB","TenDangNhap=user_bi_khoa | MatKhau=123"),
                     new("TC_LOGIN_06","Nhấn Enter ở ô mật khẩu để đăng nhập",
                         "TenDangNhap=admin\nMatKhau=123\nNhấn phím Enter",
                         "Đăng nhập thành công giống như nhấn nút ĐĂNG NHẬP",
@@ -144,7 +140,7 @@ namespace ExcelExporterApp
                 ("Dang ky goi", "TC_DK", "Kiểm tra chức năng quản lý đăng ký gói", ClrPurple, new TC[]
                 {
                     new("TC_DK_01","Thêm đăng ký gói hợp lệ",
-                        "Chọn HocVien\nChọn GoiTap\nNgayBatDau=hôm nay\nNgayHetHan=+30 ngày\nTrangThai=Đang hoạt động",
+                        "Chọn HocVien\nChọn GoiTap\nNgayBatDau=hôm nay\nNgayHetHan=+30 ngày\n=Đang hoạt động",
                         "Lưu thành công, hiển thị trong danh sách",
                         "Có HocVien và GoiTap trong DB",""),
                     new("TC_DK_02","Thêm đăng ký không chọn học viên",
@@ -161,9 +157,9 @@ namespace ExcelExporterApp
                         "Hiển thị lỗi FK rõ ràng, không xóa được",
                         "Có đăng ký đang có HoaDon",""),
                     new("TC_DK_06","Sửa trạng thái đăng ký sang 'Hết hạn'",
-                        "Chọn đăng ký\nĐổi TrangThai=Hết hạn\nNhấn Lưu",
-                        "Lưu thành công, cột TrangThai cập nhật",
-                        "Có ít nhất 1 đăng ký","TrangThai=Hết hạn"),
+                        "Chọn đăng ký\nNhấn Lưu",
+                        "Lưu thành công, lưu thành công",
+                        "Có ít nhất 1 đăng ký","=Hết hạn"),
                     new("TC_DK_07","[BUG#9] Tìm kiếm đăng ký gói trên UI không hoạt động",
                         "Nhập từ khóa vào ô tìm kiếm trang Đăng ký gói",
                         "[BUG] Danh sách KHÔNG thay đổi\nDangKyGoiDAO thiếu phương thức Search()",
@@ -248,21 +244,21 @@ namespace ExcelExporterApp
                 ("Dashboard", "TC_DB", "Kiểm tra hiển thị thống kê Dashboard", ClrLightBlue, new TC[]
                 {
                     new("TC_DB_01","Hiển thị đúng số học viên đang hoạt động",
-                        "Có N học viên TrangThai=1 trong DB",
+                        "Có N học viên active trong DB",
                         "Card 'Học viên' hiển thị đúng số N",
-                        "Có học viên trong DB","COUNT(HocVien WHERE TrangThai=1)=N"),
+                        "Có học viên trong DB","COUNT(HocVien WHERE active)=N"),
                     new("TC_DB_02","Hiển thị đúng số HLV đang hoạt động",
-                        "Có M HLV TrangThai=1 trong DB",
+                        "Có M HLV active trong DB",
                         "Card 'Huấn luyện viên' hiển thị đúng số M",
-                        "Có HLV trong DB","COUNT(HuanLuyenVien WHERE TrangThai=1)=M"),
+                        "Có HLV trong DB","COUNT(HuanLuyenVien WHERE active)=M"),
                     new("TC_DB_03","Hiển thị đúng số gói tập đang hoạt động",
-                        "Có K gói tập TrangThai=1 trong DB",
+                        "Có K gói tập active trong DB",
                         "Card 'Gói tập' hiển thị đúng số K",
-                        "Có gói tập trong DB","COUNT(GoiTap WHERE TrangThai=1)=K"),
+                        "Có gói tập trong DB","COUNT(GoiTap WHERE active)=K"),
                     new("TC_DB_04","Hiển thị đúng số đăng ký đang hoạt động",
-                        "Có P đăng ký TrangThai='Đang hoạt động'",
+                        "Có P đăng ký ",
                         "Card 'Đăng ký đang HĐ' hiển thị đúng số P",
-                        "Có đăng ký trong DB","COUNT(DangKyGoi WHERE TrangThai='Đang hoạt động')=P"),
+                        "Có đăng ký trong DB","COUNT(DangKyGoi)=P"),
                     new("TC_DB_05","Bảng đăng ký gần đây chỉ hiển thị 10 bản ghi",
                         "Có hơn 10 đăng ký trong DB",
                         "Bảng chỉ hiển thị 10 bản ghi mới nhất",
@@ -495,3 +491,4 @@ namespace ExcelExporterApp
         }
     }
 }
+

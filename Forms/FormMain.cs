@@ -1,4 +1,4 @@
-using AppGym.DataAccess;
+﻿using AppGym.DataAccess;
 using AppGym.Helpers;
 using AppGym.Models;
 
@@ -8,6 +8,7 @@ namespace AppGym.Forms
     {
         private TaiKhoan _currentUser;
         private Button? _activeButton;
+        private bool IsAdmin => _currentUser.VaiTro == "Admin";
 
         public FormMain(TaiKhoan user)
         {
@@ -41,6 +42,8 @@ namespace AppGym.Forms
 
         private void BuildMenuButtons()
         {
+            // adminOnly: true = chỉ Admin thấy menu
+            // adminOnly: false = cả Admin và NhanVien đều thấy
             var allMenuItems = new (string text, string icon, Action action, bool adminOnly)[]
             {
                 ("Tổng quan",        "\u25A3", ShowDashboard,      false),
@@ -49,16 +52,15 @@ namespace AppGym.Forms
                 ("Gói tập",          "\u25C6", ShowGoiTap,          false),
                 ("Đăng ký gói",      "\u25B6", ShowDangKyGoi,       false),
                 ("Phân công PT",     "\u2611", ShowPhanCong,        true),
-                ("Hóa đơn",          "\u25B2", ShowHoaDon,          true),
+                ("Báo cáo thanh toán", "\u2611", ShowBaoCaoThanhToan, false),
+                ("Hóa đơn",          "\u25B2", ShowHoaDon,          false),
                 ("Ca làm",           "\u25CB", ShowCaLam,           true),
             };
-
-            bool isAdmin = _currentUser.VaiTro == "Admin";
 
             int yPos = 95;
             foreach (var item in allMenuItems)
             {
-                if (item.adminOnly && !isAdmin) continue;
+                if (item.adminOnly && !IsAdmin) continue;
 
                 var btn = new Button
                 {
@@ -149,7 +151,6 @@ namespace AppGym.Forms
                 ("Tên đăng nhập:", _currentUser.TenDangNhap),
                 ("Họ tên:", _currentUser.HoTen),
                 ("Vai trò:", _currentUser.VaiTro),
-                ("Trạng thái:", _currentUser.TrangThai ? "Đang hoạt động" : "Bị khóa"),
                 ("Ngày tạo:", _currentUser.TaoLuc?.ToString("dd/MM/yyyy HH:mm") ?? "N/A"),
             };
 
@@ -297,7 +298,7 @@ namespace AppGym.Forms
             int contentW = panelContent.ClientSize.Width - 40;
             int cardGap = 15;
             int cardWidth = (contentW - cardGap * 4) / 5;
-            if (cardWidth < 150) cardWidth = 150;
+            if (cardWidth < 130) cardWidth = 130;
             int cardHeight = 140;
 
             int xPos = 10, yPos = 10;
@@ -333,13 +334,12 @@ namespace AppGym.Forms
                 dgv.DataSource = list.Take(10).ToList();
                 dgv.Columns["MaHV"].Visible = false;
                 dgv.Columns["MaGoi"].Visible = false;
-                dgv.Columns["MaDK"].HeaderText = "M\u00E3 \u0110K";
-                dgv.Columns["TenHV"].HeaderText = "H\u1ECDc vi\u00EAn";
-                dgv.Columns["TenGoi"].HeaderText = "G\u00F3i t\u1EADp";
-                dgv.Columns["NgayBatDau"].HeaderText = "Ng\u00E0y B\u0110";
-                dgv.Columns["NgayHetHan"].HeaderText = "Ng\u00E0y HH";
-                dgv.Columns["TrangThai"].HeaderText = "Tr\u1EA1ng th\u00E1i";
-                dgv.Columns["GhiChu"].HeaderText = "Ghi ch\u00FA";
+                dgv.Columns["MaDK"].HeaderText = "Mã ĐK";
+                dgv.Columns["TenHV"].HeaderText = "Học viên";
+                dgv.Columns["TenGoi"].HeaderText = "Gói tập";
+                dgv.Columns["NgayBatDau"].HeaderText = "Ngày BĐ";
+                dgv.Columns["NgayHetHan"].HeaderText = "Ngày HH";
+                dgv.Columns["GhiChu"].HeaderText = "Ghi chú";
             }
             catch { }
         }
@@ -359,7 +359,7 @@ namespace AppGym.Forms
                     dgv.Columns["MaHV"].HeaderText = "Mã HV"; dgv.Columns["HoTen"].HeaderText = "Họ tên";
                     dgv.Columns["GioiTinh"].HeaderText = "Giới tính"; dgv.Columns["NgaySinh"].HeaderText = "Ngày sinh";
                     dgv.Columns["SDT"].HeaderText = "SĐT"; dgv.Columns["Email"].HeaderText = "Email";
-                    dgv.Columns["NgayDangKy"].HeaderText = "Ngày ĐK"; dgv.Columns["TrangThai"].HeaderText = "Trạng thái";
+                    dgv.Columns["NgayDangKy"].HeaderText = "Ngày ĐK";
                 }
                 catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
             }
@@ -369,6 +369,7 @@ namespace AppGym.Forms
             btnAdd.Click      += (s, e) => { if (new FormHocVienDetail(null).ShowDialog() == DialogResult.OK) LoadData(); };
             btnEdit.Click     += (s, e) => { if (dgv.CurrentRow == null) return; var hv = (HocVien)dgv.CurrentRow.DataBoundItem; if (new FormHocVienDetail(hv).ShowDialog() == DialogResult.OK) LoadData(); };
             btnDelete.Click   += (s, e) => { if (dgv.CurrentRow == null) return; var hv = (HocVien)dgv.CurrentRow.DataBoundItem; if (MessageBox.Show($"Xóa \"{hv.HoTen}\"?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) { try { dao.Delete(hv.MaHV); LoadData(); } catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); } } };
+            if (!IsAdmin) btnDelete.Visible = false;
         }
 
         // ==================== HUAN LUYEN VIEN ====================
@@ -387,7 +388,6 @@ namespace AppGym.Forms
                     dgv.Columns["GioiTinh"].HeaderText = "Giới tính"; dgv.Columns["SDT"].HeaderText = "SĐT";
                     dgv.Columns["ChuyenMon"].HeaderText = "Chuyên môn";
                     dgv.Columns["Luong"].HeaderText = "Lương"; dgv.Columns["Luong"].DefaultCellStyle.Format = "#,##0";
-                    dgv.Columns["TrangThai"].HeaderText = "Trạng thái";
                 }
                 catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
             }
@@ -414,7 +414,7 @@ namespace AppGym.Forms
                     dgv.Columns["MaGoi"].HeaderText = "Mã Gói"; dgv.Columns["TenGoi"].HeaderText = "Tên gói";
                     dgv.Columns["ThoiHan"].HeaderText = "Thời hạn (ngày)";
                     dgv.Columns["Gia"].HeaderText = "Giá"; dgv.Columns["Gia"].DefaultCellStyle.Format = "#,##0";
-                    dgv.Columns["MoTa"].HeaderText = "Mô tả"; dgv.Columns["TrangThai"].HeaderText = "Trạng thái";
+                    dgv.Columns["MoTa"].HeaderText = "Mô tả";
                 }
                 catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
             }
@@ -423,6 +423,7 @@ namespace AppGym.Forms
             btnAdd.Click     += (s, e) => { if (new FormGoiTapDetail(null).ShowDialog() == DialogResult.OK) LoadData(); };
             btnEdit.Click    += (s, e) => { if (dgv.CurrentRow == null) return; var gt = (GoiTap)dgv.CurrentRow.DataBoundItem; if (new FormGoiTapDetail(gt).ShowDialog() == DialogResult.OK) LoadData(); };
             btnDelete.Click  += (s, e) => { if (dgv.CurrentRow == null) return; var gt = (GoiTap)dgv.CurrentRow.DataBoundItem; if (MessageBox.Show($"Xóa \"{gt.TenGoi}\"?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) { try { dao.Delete(gt.MaGoi); LoadData(); } catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); } } };
+            if (!IsAdmin) { btnAdd.Visible = false; btnEdit.Visible = false; btnDelete.Visible = false; }
         }
 
         // ==================== DANG KY GOI ====================
@@ -440,16 +441,18 @@ namespace AppGym.Forms
                     dgv.Columns["MaHV"].Visible = false; dgv.Columns["MaGoi"].Visible = false;
                     dgv.Columns["MaDK"].HeaderText = "Mã ĐK"; dgv.Columns["TenHV"].HeaderText = "Học viên";
                     dgv.Columns["TenGoi"].HeaderText = "Gói tập"; dgv.Columns["NgayBatDau"].HeaderText = "Ngày BĐ";
-                    dgv.Columns["NgayHetHan"].HeaderText = "Ngày HH"; dgv.Columns["TrangThai"].HeaderText = "Trạng thái";
+                    dgv.Columns["NgayHetHan"].HeaderText = "Ngày HH";
                     dgv.Columns["GhiChu"].HeaderText = "Ghi chú";
                 }
                 catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
             }
             LoadData();
+            txtSearch.TextChanged += (s, e) => LoadData();
             btnRefresh.Click += (s, e) => LoadData();
             btnAdd.Click     += (s, e) => { if (new FormDangKyGoiDetail(null).ShowDialog() == DialogResult.OK) LoadData(); };
             btnEdit.Click    += (s, e) => { if (dgv.CurrentRow == null) return; var dk = (DangKyGoi)dgv.CurrentRow.DataBoundItem; if (new FormDangKyGoiDetail(dk).ShowDialog() == DialogResult.OK) LoadData(); };
             btnDelete.Click  += (s, e) => { if (dgv.CurrentRow == null) return; var dk = (DangKyGoi)dgv.CurrentRow.DataBoundItem; if (MessageBox.Show($"Xóa đăng ký #{dk.MaDK}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) { try { dao.Delete(dk.MaDK); LoadData(); } catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); } } };
+            if (!IsAdmin) btnDelete.Visible = false;
         }
 
         // ==================== PHAN CONG ====================
@@ -486,6 +489,15 @@ namespace AppGym.Forms
             SetPageTitle("Quản lý Hóa đơn");
             BuildCrudPage("Tìm kiếm...", out var dgv, out var txtSearch, out var btnAdd, out var btnEdit, out var btnDelete, out var btnRefresh);
             var dao = new HoaDonDAO();
+
+            // Nút xuất hóa đơn riêng
+            int w = panelContent.ClientSize.Width;
+            var btnExport = UIHelper.CreateButton("Xuất HĐ", Color.FromArgb(39, 174, 96), Color.White, 95, 35);
+            btnExport.Location = new Point(w - 525, 10);
+            btnExport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            panelContent.Controls.Add(btnExport);
+            btnExport.BringToFront();
+
             void LoadData()
             {
                 try
@@ -504,6 +516,193 @@ namespace AppGym.Forms
             btnAdd.Click     += (s, e) => { if (new FormHoaDonDetail(null).ShowDialog() == DialogResult.OK) LoadData(); };
             btnEdit.Click    += (s, e) => { if (dgv.CurrentRow == null) return; var hd = (HoaDon)dgv.CurrentRow.DataBoundItem; if (new FormHoaDonDetail(hd).ShowDialog() == DialogResult.OK) LoadData(); };
             btnDelete.Click  += (s, e) => { if (dgv.CurrentRow == null) return; var hd = (HoaDon)dgv.CurrentRow.DataBoundItem; if (MessageBox.Show($"Xóa hóa đơn #{hd.MaHD}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) { try { dao.Delete(hd.MaHD); LoadData(); } catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); } } };
+            btnExport.Click  += (s, e) =>
+            {
+                if (dgv.CurrentRow == null) { MessageBox.Show("Vui lòng chọn hóa đơn cần xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                var hd = (HoaDon)dgv.CurrentRow.DataBoundItem;
+                using var sfd = new SaveFileDialog
+                {
+                    Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                    FileName = $"HoaDon_{hd.MaHD}_{hd.TenHV.Replace(" ", "")}_{DateTime.Now:yyyyMMdd}.xlsx"
+                };
+                if (sfd.ShowDialog() != DialogResult.OK) return;
+                try
+                {
+                    ReportExportHelper.ExportSingleInvoice(sfd.FileName, hd);
+                    MessageBox.Show("Đã xuất hóa đơn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex) { MessageBox.Show("Lỗi xuất file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            };
+            if (!IsAdmin) { btnEdit.Visible = false; btnDelete.Visible = false; }
+        }
+
+        // ==================== BAO CAO THANH TOAN ====================
+        private void ShowBaoCaoThanhToan()
+        {
+            ClearContent();
+            SetPageTitle("Báo cáo thanh toán");
+            panelContent.AutoScroll = true;
+
+            var dao = new HoaDonDAO();
+            List<ThanhToanReportItem> invoiceItems = new();
+            List<DangKyUnpaidItem> unpaidItems = new();
+
+            var toolbarHeight = 45;
+            var labelTop = 8;
+
+            var txtKeyword = UIHelper.CreateSearchBox(260);
+            txtKeyword.Location = new Point(10, labelTop);
+            txtKeyword.PlaceholderText = "Tìm theo Tên HV, Tên gói hoặc SDT";
+            panelContent.Controls.Add(txtKeyword);
+
+            var chkNoInvoice = new CheckBox
+            {
+                Text = "Chưa có hóa đơn",
+                Checked = true,
+                Location = new Point(290, labelTop + 10),
+                Font = new Font("Segoe UI", 10F),
+                AutoSize = true
+            };
+            panelContent.Controls.Add(chkNoInvoice);
+
+            var chkUnderpaid = new CheckBox
+            {
+                Text = "Chưa thanh toán đủ",
+                Checked = true,
+                Location = new Point(450, labelTop + 10),
+                Font = new Font("Segoe UI", 10F),
+                AutoSize = true
+            };
+            panelContent.Controls.Add(chkUnderpaid);
+
+            var btnRefresh = UIHelper.CreateButton("Làm mới", Color.FromArgb(52, 152, 219), Color.White, 95, 35);
+            btnRefresh.Location = new Point(panelContent.ClientSize.Width - 205, 8);
+            btnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            panelContent.Controls.Add(btnRefresh);
+
+            var btnExport = UIHelper.CreateButton("Xuất Excel", Color.FromArgb(39, 174, 96), Color.White, 100, 35);
+            btnExport.Location = new Point(panelContent.ClientSize.Width - 100, 8);
+            btnExport.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            panelContent.Controls.Add(btnExport);
+
+            var lblPaid = new Label
+            {
+                Text = "Danh sách đã thanh toán",
+                Font = new Font("Segoe UI", 13F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(44, 62, 80),
+                AutoSize = true,
+                Location = new Point(10, toolbarHeight)
+            };
+            panelContent.Controls.Add(lblPaid);
+
+            var dgvPaid = new DataGridView
+            {
+                Location = new Point(10, toolbarHeight + 35),
+                Size = new Size(panelContent.ClientSize.Width - 20, 220),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+            UIHelper.StyleDataGridView(dgvPaid);
+            panelContent.Controls.Add(dgvPaid);
+
+            var lblUnpaid = new Label
+            {
+                Text = "Danh sách chưa thanh toán",
+                Font = new Font("Segoe UI", 13F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(44, 62, 80),
+                AutoSize = true,
+                Location = new Point(10, toolbarHeight + 265)
+            };
+            panelContent.Controls.Add(lblUnpaid);
+
+            var dgvUnpaid = new DataGridView
+            {
+                Location = new Point(10, toolbarHeight + 300),
+                Size = new Size(panelContent.ClientSize.Width - 20, panelContent.ClientSize.Height - (toolbarHeight + 320)),
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
+            };
+            UIHelper.StyleDataGridView(dgvUnpaid);
+            panelContent.Controls.Add(dgvUnpaid);
+
+            void LoadData()
+            {
+                var keyword = txtKeyword.Text.Trim();
+                try
+                {
+                    invoiceItems = dao.GetInvoiceReport(keyword);
+                    dgvPaid.DataSource = invoiceItems;
+                    if (dgvPaid.Columns.Contains("MaHD")) dgvPaid.Columns["MaHD"].HeaderText = "Mã HĐ";
+                    if (dgvPaid.Columns.Contains("MaDK")) dgvPaid.Columns["MaDK"].HeaderText = "Mã ĐK";
+                    if (dgvPaid.Columns.Contains("MaHV")) dgvPaid.Columns["MaHV"].HeaderText = "Mã HV";
+                    if (dgvPaid.Columns.Contains("HoTen")) dgvPaid.Columns["HoTen"].HeaderText = "Học viên";
+                    if (dgvPaid.Columns.Contains("MaGoi")) dgvPaid.Columns["MaGoi"].HeaderText = "Mã Gói";
+                    if (dgvPaid.Columns.Contains("TenGoi")) dgvPaid.Columns["TenGoi"].HeaderText = "Gói tập";
+                    if (dgvPaid.Columns.Contains("NgayBatDau")) dgvPaid.Columns["NgayBatDau"].HeaderText = "Ngày BĐ";
+                    if (dgvPaid.Columns.Contains("NgayHetHan")) dgvPaid.Columns["NgayHetHan"].HeaderText = "Ngày HH";
+                    if (dgvPaid.Columns.Contains("NgayThanhToan")) dgvPaid.Columns["NgayThanhToan"].HeaderText = "Ngày TT";
+                    if (dgvPaid.Columns.Contains("SoTien")) { dgvPaid.Columns["SoTien"].HeaderText = "Số tiền"; dgvPaid.Columns["SoTien"].DefaultCellStyle.Format = "#,##0"; }
+                    if (dgvPaid.Columns.Contains("HinhThucTT")) dgvPaid.Columns["HinhThucTT"].HeaderText = "Hình thức";
+                    if (dgvPaid.Columns.Contains("GhiChu")) dgvPaid.Columns["GhiChu"].HeaderText = "Ghi chú";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi: " + ex.Message);
+                    return;
+                }
+
+                try
+                {
+                    unpaidItems = dao.GetUnpaidRegistrations(keyword, chkNoInvoice.Checked, chkUnderpaid.Checked);
+                    dgvUnpaid.DataSource = unpaidItems;
+                    if (dgvUnpaid.Columns.Contains("MaDK")) dgvUnpaid.Columns["MaDK"].HeaderText = "Mã ĐK";
+                    if (dgvUnpaid.Columns.Contains("MaHV")) dgvUnpaid.Columns["MaHV"].HeaderText = "Mã HV";
+                    if (dgvUnpaid.Columns.Contains("HoTen")) dgvUnpaid.Columns["HoTen"].HeaderText = "Học viên";
+                    if (dgvUnpaid.Columns.Contains("MaGoi")) dgvUnpaid.Columns["MaGoi"].HeaderText = "Mã Gói";
+                    if (dgvUnpaid.Columns.Contains("TenGoi")) dgvUnpaid.Columns["TenGoi"].HeaderText = "Gói tập";
+                    if (dgvUnpaid.Columns.Contains("NgayBatDau")) dgvUnpaid.Columns["NgayBatDau"].HeaderText = "Ngày BĐ";
+                    if (dgvUnpaid.Columns.Contains("NgayHetHan")) dgvUnpaid.Columns["NgayHetHan"].HeaderText = "Ngày HH";
+                    if (dgvUnpaid.Columns.Contains("TongDaThanhToan")) { dgvUnpaid.Columns["TongDaThanhToan"].HeaderText = "Đã thanh toán"; dgvUnpaid.Columns["TongDaThanhToan"].DefaultCellStyle.Format = "#,##0"; }
+                    if (dgvUnpaid.Columns.Contains("GiaGoi")) { dgvUnpaid.Columns["GiaGoi"].HeaderText = "Giá gói"; dgvUnpaid.Columns["GiaGoi"].DefaultCellStyle.Format = "#,##0"; }
+                    if (dgvUnpaid.Columns.Contains("ConThieu")) { dgvUnpaid.Columns["ConThieu"].HeaderText = "Còn thiếu"; dgvUnpaid.Columns["ConThieu"].DefaultCellStyle.Format = "#,##0"; }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi: " + ex.Message);
+                }
+            }
+
+            void DoExport()
+            {
+                try
+                {
+                    using var sfd = new SaveFileDialog
+                    {
+                        Filter = "Excel Workbook (*.xlsx)|*.xlsx",
+                        FileName = $"BaoCaoThanhToan_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx"
+                    };
+                    if (sfd.ShowDialog() != DialogResult.OK) return;
+
+                    ReportExportHelper.ExportThanhToanReport(
+                        sfd.FileName,
+                        invoiceItems,
+                        unpaidItems,
+                        true,
+                        true);
+
+                    MessageBox.Show("Đã xuất file thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi xuất file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            btnRefresh.Click += (s, e) => LoadData();
+            btnExport.Click += (s, e) => DoExport();
+            txtKeyword.TextChanged += (s, e) => LoadData();
+            chkNoInvoice.CheckedChanged += (s, e) => LoadData();
+            chkUnderpaid.CheckedChanged += (s, e) => LoadData();
+
+            LoadData();
         }
 
         // ==================== CA LAM ====================
@@ -567,3 +766,4 @@ namespace AppGym.Forms
         }
     }
 }
+

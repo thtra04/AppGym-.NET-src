@@ -24,7 +24,6 @@ namespace AppGym.Forms
             txtSDT.Text = hv.SDT;
             txtEmail.Text = hv.Email;
             if (hv.NgayDangKy.HasValue) dtpNgayDangKy.Value = hv.NgayDangKy.Value;
-            chkTrangThai.Checked = hv.TrangThai;
         }
 
         private void BtnSave_Click(object? sender, EventArgs e)
@@ -35,6 +34,18 @@ namespace AppGym.Forms
                 return;
             }
 
+            if (!string.IsNullOrWhiteSpace(txtSDT.Text) && !System.Text.RegularExpressions.Regex.IsMatch(txtSDT.Text.Trim(), @"^[0-9]{10,11}$"))
+            {
+                MessageBox.Show("Số điện thoại không hợp lệ (10-11 chữ số)!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtEmail.Text) && !txtEmail.Text.Trim().Contains('@'))
+            {
+                MessageBox.Show("Email không hợp lệ!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var hv = _hv ?? new HocVien();
             hv.HoTen = txtHoTen.Text.Trim();
             hv.GioiTinh = cboGioiTinh.SelectedItem?.ToString() ?? "Nam";
@@ -42,7 +53,6 @@ namespace AppGym.Forms
             hv.SDT = txtSDT.Text.Trim();
             hv.Email = txtEmail.Text.Trim();
             hv.NgayDangKy = dtpNgayDangKy.Value.Date;
-            hv.TrangThai = chkTrangThai.Checked;
 
             var dao = new HocVienDAO();
             try

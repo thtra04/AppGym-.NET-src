@@ -5,7 +5,7 @@ namespace AppGym.Tests;
 
 /// <summary>
 /// TC_GT_01 ? TC_GT_06
-/// Ki?m tra CRUD gói t?p và bug tìm ki?m (#8) trong GoiTapDAO
+/// Ki?m tra CRUD gï¿½i t?p vï¿½ bug tï¿½m ki?m (#8) trong GoiTapDAO
 /// </summary>
 [TestFixture]
 [Category("Goi tap")]
@@ -36,13 +36,12 @@ public class GoiTapTests : TestBase
         TenGoi    = $"TEST_Goi 1 Thang{suffix}",
         ThoiHan   = 30,
         Gia       = 500_000,
-        MoTa      = "Co ban",
-        TrangThai = true
+        MoTa      = "Co ban"
     };
 
-    // TC_GT_01 – Positive
+    // TC_GT_01 ï¿½ Positive
     [Test]
-    [Description("TC_GT_01: Thêm gói t?p h?p l? thành công")]
+    [Description("TC_GT_01: Thï¿½m gï¿½i t?p h?p l? thï¿½nh cï¿½ng")]
     public void Insert_ValidGoiTap_ReturnsTrue()
     {
         var gt = MakeTestGoiTap("_01");
@@ -54,9 +53,9 @@ public class GoiTapTests : TestBase
         Assert.That(_dao.GetAll().Any(x => x.TenGoi == gt.TenGoi), Is.True);
     }
 
-    // TC_GT_02 – Negative (validation)
+    // TC_GT_02 ï¿½ Negative (validation)
     [Test]
-    [Description("TC_GT_02: TenGoi r?ng – validation t? ch?i tr??c khi g?i DAO")]
+    [Description("TC_GT_02: TenGoi r?ng ï¿½ validation t? ch?i tr??c khi g?i DAO")]
     public void Insert_EmptyTenGoi_ValidationFails()
     {
         bool isValid = !string.IsNullOrWhiteSpace("");
@@ -64,9 +63,9 @@ public class GoiTapTests : TestBase
         Assert.That(isValid, Is.False);
     }
 
-    // TC_GT_03 – Negative (parse fail ? null, không crash)
+    // TC_GT_03 ï¿½ Negative (parse fail ? null, khï¿½ng crash)
     [Test]
-    [Description("TC_GT_03: ThoiHan='abc', Gia='xyz' ???c parse thành null, insert không crash")]
+    [Description("TC_GT_03: ThoiHan='abc', Gia='xyz' ???c parse thï¿½nh null, insert khï¿½ng crash")]
     public void Insert_NonNumericThoiHanAndGia_ParsedAsNull()
     {
         int?     thoiHan = int.TryParse("abc", out var t)     ? t : (int?)null;
@@ -83,23 +82,23 @@ public class GoiTapTests : TestBase
         _insertedId = _dao.GetAll().First(x => x.TenGoi == gt.TenGoi).MaGoi;
     }
 
-    // TC_GT_04 – Negative (FK violation)
+    // TC_GT_04 ï¿½ Negative (FK violation)
     [Test]
-    [Description("TC_GT_04: Xóa gói t?p ?ang ???c ??ng ký ném ra SqlException")]
+    [Description("TC_GT_04: Xï¿½a gï¿½i t?p ?ang ???c ??ng kï¿½ nï¿½m ra SqlException")]
     public void Delete_GoiTapWithDangKy_ThrowsSqlException()
     {
         var allDK = new DangKyGoiDAO().GetAll();
         if (!allDK.Any())
-            Assert.Ignore("Không có ??ng ký nào ?? test FK.");
+            Assert.Ignore("Khï¿½ng cï¿½ ??ng kï¿½ nï¿½o ?? test FK.");
 
         int maGoi = allDK.First().MaGoi;
 
         Assert.Throws<Microsoft.Data.SqlClient.SqlException>(() => _dao.Delete(maGoi));
     }
 
-    // TC_GT_05 – Positive
+    // TC_GT_05 ï¿½ Positive
     [Test]
-    [Description("TC_GT_05: S?a giá gói t?p thành công")]
+    [Description("TC_GT_05: S?a giï¿½ gï¿½i t?p thï¿½nh cï¿½ng")]
     public void Update_GoiTap_UpdatesPriceCorrectly()
     {
         var gt = MakeTestGoiTap("_05");
@@ -115,9 +114,9 @@ public class GoiTapTests : TestBase
         Assert.That(updated.Gia, Is.EqualTo(1_000_000));
     }
 
-    // TC_GT_06 / TC_BUG_08 – Bug: GoiTap không có Search() ? tìm ki?m không ho?t ??ng
+    // TC_GT_06 / TC_BUG_08 ï¿½ Bug: GoiTap khï¿½ng cï¿½ Search() ? tï¿½m ki?m khï¿½ng ho?t ??ng
     [Test]
-    [Description("TC_GT_06 / TC_BUG_08: GoiTapDAO không có ph??ng th?c Search() ? bug xác nh?n")]
+    [Description("TC_GT_06 / TC_BUG_08: GoiTapDAO khï¿½ng cï¿½ ph??ng th?c Search() ? bug xï¿½c nh?n")]
     public void GoiTapDAO_HasNoSearchMethod_BugConfirmed()
     {
         var methods = typeof(GoiTapDAO).GetMethods(
@@ -125,6 +124,6 @@ public class GoiTapTests : TestBase
         bool hasSearch = methods.Any(m => m.Name == "Search");
 
         Assert.That(hasSearch, Is.False,
-            "[BUG#8] GoiTapDAO thi?u ph??ng th?c Search() nên tìm ki?m trên UI không ho?t ??ng");
+            "[BUG#8] GoiTapDAO thi?u ph??ng th?c Search() nï¿½n tï¿½m ki?m trï¿½n UI khï¿½ng ho?t ??ng");
     }
 }

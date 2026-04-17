@@ -15,43 +15,54 @@ USE GymManagementDB;
 GO
 
 /* =========================
-   1) HOCVIEN
+   1) PHONGTAP
+   ========================= */
+CREATE TABLE dbo.PhongTap
+(
+    MaPhong     INT IDENTITY(1,1) PRIMARY KEY,
+    TenPhong    NVARCHAR(100) NOT NULL,
+    DiaChi      NVARCHAR(200) NULL,
+    SucChua     INT NULL CHECK (SucChua IS NULL OR SucChua > 0),
+    MoTa        NVARCHAR(300) NULL
+);
+GO
+
+/* =========================
+   2) HOCVIEN
    ========================= */
 CREATE TABLE dbo.HocVien
 (
     MaHV        INT IDENTITY(1,1) PRIMARY KEY,
-    HoTen       NVARCHAR(100) NULL,
+    HoTen       NVARCHAR(100) NOT NULL,
     GioiTinh    NVARCHAR(10) NULL CHECK (GioiTinh IN (N'Nam', N'Nữ', N'Khác')),
     NgaySinh    DATE NULL,
     SDT         VARCHAR(20) NULL UNIQUE,
     Email       VARCHAR(100) NULL UNIQUE,
-    NgayDangKy  DATE NULL DEFAULT (GETDATE()),
-    TrangThai   BIT NULL DEFAULT (1)
+    NgayDangKy  DATE NULL DEFAULT (GETDATE())
 );
 GO
 
 /* =========================
-   2) HUANLUYENVIEN
+   3) HUANLUYENVIEN
    ========================= */
 CREATE TABLE dbo.HuanLuyenVien
 (
     MaHLV       INT IDENTITY(1,1) PRIMARY KEY,
-    HoTen       NVARCHAR(100) NULL,
+    HoTen       NVARCHAR(100) NOT NULL,
     GioiTinh    NVARCHAR(10) NULL CHECK (GioiTinh IN (N'Nam', N'Nữ', N'Khác')),
     SDT         VARCHAR(20) NULL UNIQUE,
     ChuyenMon   NVARCHAR(100) NULL,
-    Luong       DECIMAL(18,2) NULL CHECK (Luong IS NULL OR Luong >= 0),
-    TrangThai   BIT NULL DEFAULT (1)
+    Luong       DECIMAL(18,2) NULL CHECK (Luong IS NULL OR Luong >= 0)
 );
 GO
 
 /* =========================
-   3) CALAM
+   4) CALAM
    ========================= */
 CREATE TABLE dbo.CaLam
 (
     MaCa        INT IDENTITY(1,1) PRIMARY KEY,
-    TenCa       NVARCHAR(50) NULL UNIQUE,
+    TenCa       NVARCHAR(50) NOT NULL UNIQUE,
     GioBatDau   TIME NULL,
     GioKetThuc  TIME NULL,
     CONSTRAINT CK_CaLam_Time CHECK (
@@ -61,21 +72,20 @@ CREATE TABLE dbo.CaLam
 GO
 
 /* =========================
-   4) GOITAP
+   5) GOITAP
    ========================= */
 CREATE TABLE dbo.GoiTap
 (
     MaGoi       INT IDENTITY(1,1) PRIMARY KEY,
-    TenGoi      NVARCHAR(100) NULL UNIQUE,
+    TenGoi      NVARCHAR(100) NOT NULL UNIQUE,
     ThoiHan     INT NULL CHECK (ThoiHan IS NULL OR ThoiHan > 0),
     Gia         DECIMAL(18,2) NULL CHECK (Gia IS NULL OR Gia >= 0),
-    MoTa        NVARCHAR(300) NULL,
-    TrangThai   BIT NULL DEFAULT (1)
+    MoTa        NVARCHAR(300) NULL
 );
 GO
 
 /* =========================
-   5) DANGKYGOI
+   6) DANGKYGOI
    ========================= */
 CREATE TABLE dbo.DangKyGoi
 (
@@ -84,8 +94,6 @@ CREATE TABLE dbo.DangKyGoi
     MaGoi       INT NOT NULL,
     NgayBatDau  DATE NULL,
     NgayHetHan  DATE NULL,
-    TrangThai   NVARCHAR(20) NULL DEFAULT(N'Đang hoạt động')
-        CHECK (TrangThai IN (N'Đang hoạt động', N'Hết hạn', N'Tạm dừng', N'Hủy')),
     GhiChu      NVARCHAR(300) NULL,
 
     CONSTRAINT FK_DangKyGoi_HocVien FOREIGN KEY (MaHV) REFERENCES dbo.HocVien(MaHV),
@@ -97,7 +105,7 @@ CREATE TABLE dbo.DangKyGoi
 GO
 
 /* =========================
-   6) PHANCONG
+   7) PHANCONG
    ========================= */
 CREATE TABLE dbo.PhanCong
 (
@@ -119,7 +127,7 @@ CREATE TABLE dbo.PhanCong
 GO
 
 /* =========================
-   7) HOADON
+   8) HOADON
    ========================= */
 CREATE TABLE dbo.HoaDon
 (
@@ -136,7 +144,7 @@ CREATE TABLE dbo.HoaDon
 GO
 
 /* =========================
-   8) QUYEN
+   9) QUYEN
    ========================= */
 CREATE TABLE dbo.Quyen
 (
@@ -149,24 +157,23 @@ CREATE TABLE dbo.Quyen
 GO
 
 /* =========================
-   9) TAIKHOAN
+   10) TAIKHOAN
    ========================= */
 CREATE TABLE dbo.TaiKhoan
 (
     MaTK        INT IDENTITY(1,1) PRIMARY KEY,
     TenDangNhap VARCHAR(50) NOT NULL UNIQUE,
-    MatKhauHash VARBINARY(64) NOT NULL,
-    Salt        VARBINARY(32) NOT NULL,
+    MatKhauHash VARBINARY(MAX) NOT NULL,
+    Salt        UNIQUEIDENTIFIER DEFAULT NEWID(),
     HoTen       NVARCHAR(100) NULL,
     VaiTro      NVARCHAR(20) NULL DEFAULT(N'NhanVien')
         CHECK (VaiTro IN (N'Admin', N'NhanVien')),
-    TrangThai   BIT NULL DEFAULT (1),
     TaoLuc      DATETIME NULL DEFAULT (GETDATE())
 );
 GO
 
 /* =========================
-   10) TAIKHOAN_QUYEN
+   11) TAIKHOAN_QUYEN
    ========================= */
 CREATE TABLE dbo.TaiKhoan_Quyen
 (

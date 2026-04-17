@@ -6,7 +6,6 @@ namespace AppGym.Models
         public string TenDangNhap { get; set; } = "";
         public string HoTen { get; set; } = "";
         public string VaiTro { get; set; } = "NhanVien";
-        public bool TrangThai { get; set; } = true;
         public DateTime? TaoLuc { get; set; }
     }
 }

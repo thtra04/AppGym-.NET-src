@@ -1,18 +1,18 @@
-﻿using AppGym.Helpers;
+using AppGym.Helpers;
 
 namespace AppGym.Forms
 {
-    partial class FormGoiTapDetail
+    partial class FormPhongTapDetail
     {
         private System.ComponentModel.IContainer components = null;
 
-        private TextBox txtTenGoi;
-        private TextBox txtThoiHan;
-        private TextBox txtGia;
+        private TextBox txtTenPhong;
+        private TextBox txtDiaChi;
+        private TextBox txtSucChua;
         private TextBox txtMoTa;
-        private Label lblTenGoi;
-        private Label lblThoiHan;
-        private Label lblGia;
+        private Label lblTenPhong;
+        private Label lblDiaChi;
+        private Label lblSucChua;
         private Label lblMoTa;
         private Button btnSave;
         private Button btnCancel;
@@ -25,59 +25,59 @@ namespace AppGym.Forms
 
         private void InitializeComponent()
         {
-            this.txtTenGoi = new TextBox();
-            this.txtThoiHan = new TextBox();
-            this.txtGia = new TextBox();
+            this.txtTenPhong = new TextBox();
+            this.txtDiaChi = new TextBox();
+            this.txtSucChua = new TextBox();
             this.txtMoTa = new TextBox();
-            this.lblTenGoi = new Label();
-            this.lblThoiHan = new Label();
-            this.lblGia = new Label();
+            this.lblTenPhong = new Label();
+            this.lblDiaChi = new Label();
+            this.lblSucChua = new Label();
             this.lblMoTa = new Label();
             this.btnSave = new Button();
             this.btnCancel = new Button();
             this.SuspendLayout();
 
-            // lblTenGoi
-            this.lblTenGoi.AutoSize = true;
-            this.lblTenGoi.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            this.lblTenGoi.Location = new Point(20, 23);
-            this.lblTenGoi.Name = "lblTenGoi";
-            this.lblTenGoi.Text = "Tên gói:";
+            // lblTenPhong
+            this.lblTenPhong.AutoSize = true;
+            this.lblTenPhong.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            this.lblTenPhong.Location = new Point(20, 23);
+            this.lblTenPhong.Name = "lblTenPhong";
+            this.lblTenPhong.Text = "Tên phòng:";
 
-            // txtTenGoi
-            this.txtTenGoi.BorderStyle = BorderStyle.FixedSingle;
-            this.txtTenGoi.Font = new Font("Segoe UI", 10F);
-            this.txtTenGoi.Location = new Point(170, 20);
-            this.txtTenGoi.Name = "txtTenGoi";
-            this.txtTenGoi.Size = new Size(290, 27);
+            // txtTenPhong
+            this.txtTenPhong.BorderStyle = BorderStyle.FixedSingle;
+            this.txtTenPhong.Font = new Font("Segoe UI", 10F);
+            this.txtTenPhong.Location = new Point(170, 20);
+            this.txtTenPhong.Name = "txtTenPhong";
+            this.txtTenPhong.Size = new Size(290, 27);
 
-            // lblThoiHan
-            this.lblThoiHan.AutoSize = true;
-            this.lblThoiHan.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            this.lblThoiHan.Location = new Point(20, 75);
-            this.lblThoiHan.Name = "lblThoiHan";
-            this.lblThoiHan.Text = "Thời hạn (ngày):";
+            // lblDiaChi
+            this.lblDiaChi.AutoSize = true;
+            this.lblDiaChi.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            this.lblDiaChi.Location = new Point(20, 75);
+            this.lblDiaChi.Name = "lblDiaChi";
+            this.lblDiaChi.Text = "Địa chỉ:";
 
-            // txtThoiHan
-            this.txtThoiHan.BorderStyle = BorderStyle.FixedSingle;
-            this.txtThoiHan.Font = new Font("Segoe UI", 10F);
-            this.txtThoiHan.Location = new Point(170, 72);
-            this.txtThoiHan.Name = "txtThoiHan";
-            this.txtThoiHan.Size = new Size(290, 27);
+            // txtDiaChi
+            this.txtDiaChi.BorderStyle = BorderStyle.FixedSingle;
+            this.txtDiaChi.Font = new Font("Segoe UI", 10F);
+            this.txtDiaChi.Location = new Point(170, 72);
+            this.txtDiaChi.Name = "txtDiaChi";
+            this.txtDiaChi.Size = new Size(290, 27);
 
-            // lblGia
-            this.lblGia.AutoSize = true;
-            this.lblGia.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            this.lblGia.Location = new Point(20, 127);
-            this.lblGia.Name = "lblGia";
-            this.lblGia.Text = "Giá:";
+            // lblSucChua
+            this.lblSucChua.AutoSize = true;
+            this.lblSucChua.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            this.lblSucChua.Location = new Point(20, 127);
+            this.lblSucChua.Name = "lblSucChua";
+            this.lblSucChua.Text = "Sức chứa:";
 
-            // txtGia
-            this.txtGia.BorderStyle = BorderStyle.FixedSingle;
-            this.txtGia.Font = new Font("Segoe UI", 10F);
-            this.txtGia.Location = new Point(170, 124);
-            this.txtGia.Name = "txtGia";
-            this.txtGia.Size = new Size(290, 27);
+            // txtSucChua
+            this.txtSucChua.BorderStyle = BorderStyle.FixedSingle;
+            this.txtSucChua.Font = new Font("Segoe UI", 10F);
+            this.txtSucChua.Location = new Point(170, 124);
+            this.txtSucChua.Name = "txtSucChua";
+            this.txtSucChua.Size = new Size(290, 27);
 
             // lblMoTa
             this.lblMoTa.AutoSize = true;
@@ -116,17 +116,17 @@ namespace AppGym.Forms
             this.btnCancel.Text = "Hủy";
             this.btnCancel.Click += new EventHandler(this.BtnCancel_Click);
 
-            // FormGoiTapDetail
+            // FormPhongTapDetail
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(245, 246, 250);
             this.ClientSize = new Size(490, 325);
-            this.Controls.Add(this.lblTenGoi);
-            this.Controls.Add(this.txtTenGoi);
-            this.Controls.Add(this.lblThoiHan);
-            this.Controls.Add(this.txtThoiHan);
-            this.Controls.Add(this.lblGia);
-            this.Controls.Add(this.txtGia);
+            this.Controls.Add(this.lblTenPhong);
+            this.Controls.Add(this.txtTenPhong);
+            this.Controls.Add(this.lblDiaChi);
+            this.Controls.Add(this.txtDiaChi);
+            this.Controls.Add(this.lblSucChua);
+            this.Controls.Add(this.txtSucChua);
             this.Controls.Add(this.lblMoTa);
             this.Controls.Add(this.txtMoTa);
             this.Controls.Add(this.btnSave);
@@ -134,9 +134,9 @@ namespace AppGym.Forms
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FormGoiTapDetail";
+            this.Name = "FormPhongTapDetail";
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Text = "Gói tập";
+            this.Text = "Phòng tập";
             this.ResumeLayout(false);
             this.PerformLayout();
         }

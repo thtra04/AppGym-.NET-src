@@ -10,14 +10,12 @@
         private TextBox txtSDT;
         private TextBox txtEmail;
         private DateTimePicker dtpNgayDangKy;
-        private CheckBox chkTrangThai;
         private Label lblHoTen;
         private Label lblGioiTinh;
         private Label lblNgaySinh;
         private Label lblSDT;
         private Label lblEmail;
         private Label lblNgayDangKy;
-        private Label lblTrangThai;
         private Button btnSave;
         private Button btnCancel;
 
@@ -35,14 +33,12 @@
             this.txtSDT = new TextBox();
             this.txtEmail = new TextBox();
             this.dtpNgayDangKy = new DateTimePicker();
-            this.chkTrangThai = new CheckBox();
             this.lblHoTen = new Label();
             this.lblGioiTinh = new Label();
             this.lblNgaySinh = new Label();
             this.lblSDT = new Label();
             this.lblEmail = new Label();
             this.lblNgayDangKy = new Label();
-            this.lblTrangThai = new Label();
             this.btnSave = new Button();
             this.btnCancel = new Button();
             this.SuspendLayout();
@@ -127,27 +123,12 @@
             this.dtpNgayDangKy.Name = "dtpNgayDangKy";
             this.dtpNgayDangKy.Size = new Size(290, 27);
 
-            // lblTrangThai
-            this.lblTrangThai.AutoSize = true;
-            this.lblTrangThai.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            this.lblTrangThai.Location = new Point(20, 335);
-            this.lblTrangThai.Text = "Trạng thái:";
-
-            // chkTrangThai
-            this.chkTrangThai.AutoSize = true;
-            this.chkTrangThai.Checked = true;
-            this.chkTrangThai.CheckState = CheckState.Checked;
-            this.chkTrangThai.Font = new Font("Segoe UI", 10F);
-            this.chkTrangThai.Location = new Point(160, 333);
-            this.chkTrangThai.Name = "chkTrangThai";
-            this.chkTrangThai.Text = "Hoạt động";
-
             // btnSave
             this.btnSave.BackColor = Color.FromArgb(39, 174, 96);
             this.btnSave.FlatStyle = FlatStyle.Flat;
             this.btnSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             this.btnSave.ForeColor = Color.White;
-            this.btnSave.Location = new Point(105, 385);
+            this.btnSave.Location = new Point(105, 335);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new Size(130, 40);
             this.btnSave.Text = "Lưu";
@@ -158,7 +139,7 @@
             this.btnCancel.FlatStyle = FlatStyle.Flat;
             this.btnCancel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             this.btnCancel.ForeColor = Color.White;
-            this.btnCancel.Location = new Point(255, 385);
+            this.btnCancel.Location = new Point(255, 335);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new Size(130, 40);
             this.btnCancel.Text = "Hủy";
@@ -168,7 +149,7 @@
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(245, 246, 250);
-            this.ClientSize = new Size(490, 450);
+            this.ClientSize = new Size(490, 400);
             this.Controls.Add(this.lblHoTen);
             this.Controls.Add(this.txtHoTen);
             this.Controls.Add(this.lblGioiTinh);
@@ -181,8 +162,6 @@
             this.Controls.Add(this.txtEmail);
             this.Controls.Add(this.lblNgayDangKy);
             this.Controls.Add(this.dtpNgayDangKy);
-            this.Controls.Add(this.lblTrangThai);
-            this.Controls.Add(this.chkTrangThai);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnCancel);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;

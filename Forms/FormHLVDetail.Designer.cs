@@ -9,13 +9,11 @@
         private TextBox txtSDT;
         private TextBox txtChuyenMon;
         private TextBox txtLuong;
-        private CheckBox chkTrangThai;
         private Label lblHoTen;
         private Label lblGioiTinh;
         private Label lblSDT;
         private Label lblChuyenMon;
         private Label lblLuong;
-        private Label lblTrangThai;
         private Button btnSave;
         private Button btnCancel;
 
@@ -32,13 +30,11 @@
             txtSDT = new TextBox();
             txtChuyenMon = new TextBox();
             txtLuong = new TextBox();
-            chkTrangThai = new CheckBox();
             lblHoTen = new Label();
             lblGioiTinh = new Label();
             lblSDT = new Label();
             lblChuyenMon = new Label();
             lblLuong = new Label();
-            lblTrangThai = new Label();
             btnSave = new Button();
             btnCancel = new Button();
             SuspendLayout();
@@ -94,19 +90,6 @@
             txtLuong.Size = new Size(331, 30);
             txtLuong.TabIndex = 9;
             // 
-            // chkTrangThai
-            // 
-            chkTrangThai.AutoSize = true;
-            chkTrangThai.Checked = true;
-            chkTrangThai.CheckState = CheckState.Checked;
-            chkTrangThai.Font = new Font("Segoe UI", 10F);
-            chkTrangThai.Location = new Point(183, 375);
-            chkTrangThai.Margin = new Padding(3, 4, 3, 4);
-            chkTrangThai.Name = "chkTrangThai";
-            chkTrangThai.Size = new Size(109, 27);
-            chkTrangThai.TabIndex = 11;
-            chkTrangThai.Text = "Hoạt động";
-            // 
             // lblHoTen
             // 
             lblHoTen.AutoSize = true;
@@ -158,27 +141,17 @@
             lblLuong.TabIndex = 8;
             lblLuong.Text = "Lưong:";
             // 
-            // lblTrangThai
-            // 
-            lblTrangThai.AutoSize = true;
-            lblTrangThai.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblTrangThai.Location = new Point(23, 377);
-            lblTrangThai.Name = "lblTrangThai";
-            lblTrangThai.Size = new Size(95, 23);
-            lblTrangThai.TabIndex = 10;
-            lblTrangThai.Text = "Trạng thái:";
-            // 
             // btnSave
             // 
             btnSave.BackColor = Color.FromArgb(39, 174, 96);
             btnSave.FlatStyle = FlatStyle.Flat;
             btnSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnSave.ForeColor = Color.White;
-            btnSave.Location = new Point(120, 440);
+            btnSave.Location = new Point(120, 370);
             btnSave.Margin = new Padding(3, 4, 3, 4);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(149, 53);
-            btnSave.TabIndex = 12;
+            btnSave.TabIndex = 10;
             btnSave.Text = "Lưu";
             btnSave.UseVisualStyleBackColor = false;
             btnSave.Click += BtnSave_Click;
@@ -189,11 +162,11 @@
             btnCancel.FlatStyle = FlatStyle.Flat;
             btnCancel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnCancel.ForeColor = Color.White;
-            btnCancel.Location = new Point(291, 440);
+            btnCancel.Location = new Point(291, 370);
             btnCancel.Margin = new Padding(3, 4, 3, 4);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(149, 53);
-            btnCancel.TabIndex = 13;
+            btnCancel.TabIndex = 11;
             btnCancel.Text = "Hủy";
             btnCancel.UseVisualStyleBackColor = false;
             btnCancel.Click += BtnCancel_Click;
@@ -203,7 +176,7 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(245, 246, 250);
-            ClientSize = new Size(560, 527);
+            ClientSize = new Size(560, 460);
             Controls.Add(lblHoTen);
             Controls.Add(txtHoTen);
             Controls.Add(lblGioiTinh);
@@ -214,8 +187,6 @@
             Controls.Add(txtChuyenMon);
             Controls.Add(lblLuong);
             Controls.Add(txtLuong);
-            Controls.Add(lblTrangThai);
-            Controls.Add(chkTrangThai);
             Controls.Add(btnSave);
             Controls.Add(btnCancel);
             FormBorderStyle = FormBorderStyle.FixedDialog;

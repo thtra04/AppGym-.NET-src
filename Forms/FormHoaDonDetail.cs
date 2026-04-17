@@ -1,5 +1,4 @@
 using AppGym.DataAccess;
-using AppGym.Helpers;
 using AppGym.Models;
 
 namespace AppGym.Forms
@@ -7,6 +6,9 @@ namespace AppGym.Forms
     public partial class FormHoaDonDetail : Form
     {
         private HoaDon? _hd;
+        private List<DangKyGoi> _dkList = new();
+        private List<GoiTap> _goiList = new();
+        private Dictionary<int, DangKyGoi> _dkMap = new();
 
         public FormHoaDonDetail(HoaDon? hd)
         {
@@ -15,16 +17,46 @@ namespace AppGym.Forms
             Text = _hd == null ? "Thêm Hóa đơn" : "Sửa Hóa đơn";
             LoadCombos();
             if (hd != null) LoadData(hd);
+
+            cboDangKy.SelectedIndexChanged += CboDangKy_SelectedIndexChanged;
+        }
+
+        private void CboDangKy_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_hd != null) return; // don't auto-fill when editing
+            if (cboDangKy.SelectedValue == null) return;
+
+            if (int.TryParse(cboDangKy.SelectedValue.ToString(), out var maDK) && _dkMap.TryGetValue(maDK, out var dk))
+            {
+                try
+                {
+                    var goi = _goiList.FirstOrDefault(g => g.MaGoi == dk.MaGoi);
+                    if (goi?.Gia != null)
+                    {
+                        txtSoTien.Text = goi.Gia.Value.ToString("0");
+                    }
+                }
+                catch { }
+            }
         }
 
         private void LoadCombos()
         {
             try
             {
-                var dkList = new DangKyGoiDAO().GetAll();
-                cboDangKy.DisplayMember = "TenHV";
+                _dkList = new DangKyGoiDAO().GetAll();
+                _goiList = new GoiTapDAO().GetAll();
+                _dkMap = _dkList.ToDictionary(x => x.MaDK, x => x);
+
+                var displayList = _dkList.Select(dk => new
+                {
+                    MaDK = dk.MaDK,
+                    Display = $"{dk.TenHV} - {dk.TenGoi} ({(dk.NgayBatDau?.ToString("dd/MM/yyyy") ?? "N/A")} -> {(dk.NgayHetHan?.ToString("dd/MM/yyyy") ?? "N/A")})"
+                }).ToList();
+
+                cboDangKy.DisplayMember = "Display";
                 cboDangKy.ValueMember = "MaDK";
-                cboDangKy.DataSource = dkList;
+                cboDangKy.DataSource = displayList;
             }
             catch { }
         }
@@ -34,7 +66,12 @@ namespace AppGym.Forms
             cboDangKy.SelectedValue = hd.MaDK;
             if (hd.NgayThanhToan.HasValue) dtpNgayTT.Value = hd.NgayThanhToan.Value;
             txtSoTien.Text = hd.SoTien?.ToString() ?? "";
-            cboHinhThuc.SelectedItem = hd.HinhThucTT;
+
+            if (!string.IsNullOrWhiteSpace(hd.HinhThucTT) && cboHinhThuc.Items.Contains(hd.HinhThucTT))
+            {
+                cboHinhThuc.SelectedItem = hd.HinhThucTT;
+            }
+
             txtGhiChu.Text = hd.GhiChu;
         }
 
@@ -52,11 +89,18 @@ namespace AppGym.Forms
                 return;
             }
 
+            var hinhThuc = cboHinhThuc.SelectedItem?.ToString()?.Trim();
+            if (string.IsNullOrWhiteSpace(hinhThuc))
+            {
+                MessageBox.Show("Vui lòng chọn hình thức thanh toán!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var hd = _hd ?? new HoaDon();
             hd.MaDK = (int)cboDangKy.SelectedValue;
             hd.NgayThanhToan = dtpNgayTT.Value;
             hd.SoTien = soTien;
-            hd.HinhThucTT = cboHinhThuc.SelectedItem?.ToString() ?? "Tiền mặt";
+            hd.HinhThucTT = hinhThuc;
             hd.GhiChu = txtGhiChu.Text.Trim();
 
             var dao = new HoaDonDAO();

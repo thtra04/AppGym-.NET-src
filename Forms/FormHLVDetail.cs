@@ -23,7 +23,6 @@ namespace AppGym.Forms
             txtSDT.Text = hlv.SDT;
             txtChuyenMon.Text = hlv.ChuyenMon;
             txtLuong.Text = hlv.Luong?.ToString() ?? "";
-            chkTrangThai.Checked = hlv.TrangThai;
         }
 
         private void BtnSave_Click(object? sender, EventArgs e)
@@ -40,7 +39,6 @@ namespace AppGym.Forms
             hlv.SDT = txtSDT.Text.Trim();
             hlv.ChuyenMon = txtChuyenMon.Text.Trim();
             hlv.Luong = decimal.TryParse(txtLuong.Text, out var l) ? l : null;
-            hlv.TrangThai = chkTrangThai.Checked;
 
             var dao = new HuanLuyenVienDAO();
             try

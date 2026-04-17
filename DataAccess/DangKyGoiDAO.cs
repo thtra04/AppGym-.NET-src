@@ -26,7 +26,6 @@ namespace AppGym.DataAccess
                     MaGoi = reader.GetInt32(reader.GetOrdinal("MaGoi")),
                     NgayBatDau = reader.IsDBNull(reader.GetOrdinal("NgayBatDau")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayBatDau")),
                     NgayHetHan = reader.IsDBNull(reader.GetOrdinal("NgayHetHan")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayHetHan")),
-                    TrangThai = reader.IsDBNull(reader.GetOrdinal("TrangThai")) ? "" : reader.GetString(reader.GetOrdinal("TrangThai")),
                     GhiChu = reader.IsDBNull(reader.GetOrdinal("GhiChu")) ? "" : reader.GetString(reader.GetOrdinal("GhiChu")),
                     TenHV = reader.IsDBNull(reader.GetOrdinal("TenHV")) ? "" : reader.GetString(reader.GetOrdinal("TenHV")),
                     TenGoi = reader.IsDBNull(reader.GetOrdinal("TenGoi")) ? "" : reader.GetString(reader.GetOrdinal("TenGoi"))
@@ -40,13 +39,12 @@ namespace AppGym.DataAccess
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             using var cmd = new SqlCommand(
-                @"INSERT INTO DangKyGoi (MaHV, MaGoi, NgayBatDau, NgayHetHan, TrangThai, GhiChu)
-                  VALUES (@MaHV, @MaGoi, @NgayBatDau, @NgayHetHan, @TrangThai, @GhiChu)", conn);
+                @"INSERT INTO DangKyGoi (MaHV, MaGoi, NgayBatDau, NgayHetHan, GhiChu)
+                  VALUES (@MaHV, @MaGoi, @NgayBatDau, @NgayHetHan, @GhiChu)", conn);
             cmd.Parameters.AddWithValue("@MaHV", dk.MaHV);
             cmd.Parameters.AddWithValue("@MaGoi", dk.MaGoi);
             cmd.Parameters.AddWithValue("@NgayBatDau", (object?)dk.NgayBatDau ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@NgayHetHan", (object?)dk.NgayHetHan ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@TrangThai", dk.TrangThai);
             cmd.Parameters.AddWithValue("@GhiChu", dk.GhiChu);
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -57,14 +55,13 @@ namespace AppGym.DataAccess
             conn.Open();
             using var cmd = new SqlCommand(
                 @"UPDATE DangKyGoi SET MaHV=@MaHV, MaGoi=@MaGoi, NgayBatDau=@NgayBatDau,
-                  NgayHetHan=@NgayHetHan, TrangThai=@TrangThai, GhiChu=@GhiChu
+                  NgayHetHan=@NgayHetHan, GhiChu=@GhiChu
                   WHERE MaDK=@MaDK", conn);
             cmd.Parameters.AddWithValue("@MaDK", dk.MaDK);
             cmd.Parameters.AddWithValue("@MaHV", dk.MaHV);
             cmd.Parameters.AddWithValue("@MaGoi", dk.MaGoi);
             cmd.Parameters.AddWithValue("@NgayBatDau", (object?)dk.NgayBatDau ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@NgayHetHan", (object?)dk.NgayHetHan ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@TrangThai", dk.TrangThai);
             cmd.Parameters.AddWithValue("@GhiChu", dk.GhiChu);
             return cmd.ExecuteNonQuery() > 0;
         }
@@ -82,7 +79,7 @@ namespace AppGym.DataAccess
         {
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
-            using var cmd = new SqlCommand("SELECT COUNT(*) FROM DangKyGoi WHERE TrangThai=N'Đang hoạt động'", conn);
+            using var cmd = new SqlCommand("SELECT COUNT(*) FROM DangKyGoi", conn);
             return (int)cmd.ExecuteScalar();
         }
     }

@@ -9,6 +9,5 @@ namespace AppGym.Models
         public string SDT { get; set; } = "";
         public string Email { get; set; } = "";
         public DateTime? NgayDangKy { get; set; }
-        public bool TrangThai { get; set; } = true;
     }
 }

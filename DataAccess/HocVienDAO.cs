@@ -22,8 +22,7 @@ namespace AppGym.DataAccess
                     NgaySinh = reader.IsDBNull(reader.GetOrdinal("NgaySinh")) ? null : reader.GetDateTime(reader.GetOrdinal("NgaySinh")),
                     SDT = reader.IsDBNull(reader.GetOrdinal("SDT")) ? "" : reader.GetString(reader.GetOrdinal("SDT")),
                     Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? "" : reader.GetString(reader.GetOrdinal("Email")),
-                    NgayDangKy = reader.IsDBNull(reader.GetOrdinal("NgayDangKy")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayDangKy")),
-                    TrangThai = !reader.IsDBNull(reader.GetOrdinal("TrangThai")) && reader.GetBoolean(reader.GetOrdinal("TrangThai"))
+                    NgayDangKy = reader.IsDBNull(reader.GetOrdinal("NgayDangKy")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayDangKy"))
                 });
             }
             return list;
@@ -48,8 +47,7 @@ namespace AppGym.DataAccess
                     NgaySinh = reader.IsDBNull(reader.GetOrdinal("NgaySinh")) ? null : reader.GetDateTime(reader.GetOrdinal("NgaySinh")),
                     SDT = reader.IsDBNull(reader.GetOrdinal("SDT")) ? "" : reader.GetString(reader.GetOrdinal("SDT")),
                     Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? "" : reader.GetString(reader.GetOrdinal("Email")),
-                    NgayDangKy = reader.IsDBNull(reader.GetOrdinal("NgayDangKy")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayDangKy")),
-                    TrangThai = !reader.IsDBNull(reader.GetOrdinal("TrangThai")) && reader.GetBoolean(reader.GetOrdinal("TrangThai"))
+                    NgayDangKy = reader.IsDBNull(reader.GetOrdinal("NgayDangKy")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayDangKy"))
                 });
             }
             return list;
@@ -60,15 +58,14 @@ namespace AppGym.DataAccess
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             using var cmd = new SqlCommand(
-                @"INSERT INTO HocVien (HoTen, GioiTinh, NgaySinh, SDT, Email, NgayDangKy, TrangThai)
-                  VALUES (@HoTen, @GioiTinh, @NgaySinh, @SDT, @Email, @NgayDangKy, @TrangThai)", conn);
+                @"INSERT INTO HocVien (HoTen, GioiTinh, NgaySinh, SDT, Email, NgayDangKy)
+                  VALUES (@HoTen, @GioiTinh, @NgaySinh, @SDT, @Email, @NgayDangKy)", conn);
             cmd.Parameters.AddWithValue("@HoTen", hv.HoTen);
             cmd.Parameters.AddWithValue("@GioiTinh", hv.GioiTinh);
             cmd.Parameters.AddWithValue("@NgaySinh", (object?)hv.NgaySinh ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@SDT", hv.SDT);
             cmd.Parameters.AddWithValue("@Email", hv.Email);
             cmd.Parameters.AddWithValue("@NgayDangKy", (object?)hv.NgayDangKy ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@TrangThai", hv.TrangThai);
             return cmd.ExecuteNonQuery() > 0;
         }
 
@@ -78,7 +75,7 @@ namespace AppGym.DataAccess
             conn.Open();
             using var cmd = new SqlCommand(
                 @"UPDATE HocVien SET HoTen=@HoTen, GioiTinh=@GioiTinh, NgaySinh=@NgaySinh,
-                  SDT=@SDT, Email=@Email, NgayDangKy=@NgayDangKy, TrangThai=@TrangThai
+                  SDT=@SDT, Email=@Email, NgayDangKy=@NgayDangKy
                   WHERE MaHV=@MaHV", conn);
             cmd.Parameters.AddWithValue("@MaHV", hv.MaHV);
             cmd.Parameters.AddWithValue("@HoTen", hv.HoTen);
@@ -87,7 +84,6 @@ namespace AppGym.DataAccess
             cmd.Parameters.AddWithValue("@SDT", hv.SDT);
             cmd.Parameters.AddWithValue("@Email", hv.Email);
             cmd.Parameters.AddWithValue("@NgayDangKy", (object?)hv.NgayDangKy ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@TrangThai", hv.TrangThai);
             return cmd.ExecuteNonQuery() > 0;
         }
 
@@ -104,7 +100,7 @@ namespace AppGym.DataAccess
         {
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
-            using var cmd = new SqlCommand("SELECT COUNT(*) FROM HocVien WHERE TrangThai=1", conn);
+            using var cmd = new SqlCommand("SELECT COUNT(*) FROM HocVien", conn);
             return (int)cmd.ExecuteScalar();
         }
     }

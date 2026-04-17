@@ -23,7 +23,7 @@ public class HuanLuyenVienTests : TestBase
     private HuanLuyenVien MakeTestHLV(string suffix = "") => new()
     {
         HoTen = $"TEST_HLV B{suffix}", GioiTinh = "N\u1EEF", SDT = "0912345678",
-        ChuyenMon = "Yoga", Luong = 5_000_000, TrangThai = true
+        ChuyenMon = "Yoga", Luong = 5_000_000
     };
 
     [Test, Description("TC_HLV_01: Insert valid HLV")]

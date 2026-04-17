@@ -21,8 +21,7 @@ namespace AppGym.DataAccess
                     GioiTinh = reader.IsDBNull(reader.GetOrdinal("GioiTinh")) ? "" : reader.GetString(reader.GetOrdinal("GioiTinh")),
                     SDT = reader.IsDBNull(reader.GetOrdinal("SDT")) ? "" : reader.GetString(reader.GetOrdinal("SDT")),
                     ChuyenMon = reader.IsDBNull(reader.GetOrdinal("ChuyenMon")) ? "" : reader.GetString(reader.GetOrdinal("ChuyenMon")),
-                    Luong = reader.IsDBNull(reader.GetOrdinal("Luong")) ? null : reader.GetDecimal(reader.GetOrdinal("Luong")),
-                    TrangThai = !reader.IsDBNull(reader.GetOrdinal("TrangThai")) && reader.GetBoolean(reader.GetOrdinal("TrangThai"))
+                    Luong = reader.IsDBNull(reader.GetOrdinal("Luong")) ? null : reader.GetDecimal(reader.GetOrdinal("Luong"))
                 });
             }
             return list;
@@ -46,8 +45,7 @@ namespace AppGym.DataAccess
                     GioiTinh = reader.IsDBNull(reader.GetOrdinal("GioiTinh")) ? "" : reader.GetString(reader.GetOrdinal("GioiTinh")),
                     SDT = reader.IsDBNull(reader.GetOrdinal("SDT")) ? "" : reader.GetString(reader.GetOrdinal("SDT")),
                     ChuyenMon = reader.IsDBNull(reader.GetOrdinal("ChuyenMon")) ? "" : reader.GetString(reader.GetOrdinal("ChuyenMon")),
-                    Luong = reader.IsDBNull(reader.GetOrdinal("Luong")) ? null : reader.GetDecimal(reader.GetOrdinal("Luong")),
-                    TrangThai = !reader.IsDBNull(reader.GetOrdinal("TrangThai")) && reader.GetBoolean(reader.GetOrdinal("TrangThai"))
+                    Luong = reader.IsDBNull(reader.GetOrdinal("Luong")) ? null : reader.GetDecimal(reader.GetOrdinal("Luong"))
                 });
             }
             return list;
@@ -58,14 +56,13 @@ namespace AppGym.DataAccess
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             using var cmd = new SqlCommand(
-                @"INSERT INTO HuanLuyenVien (HoTen, GioiTinh, SDT, ChuyenMon, Luong, TrangThai)
-                  VALUES (@HoTen, @GioiTinh, @SDT, @ChuyenMon, @Luong, @TrangThai)", conn);
+                @"INSERT INTO HuanLuyenVien (HoTen, GioiTinh, SDT, ChuyenMon, Luong)
+                  VALUES (@HoTen, @GioiTinh, @SDT, @ChuyenMon, @Luong)", conn);
             cmd.Parameters.AddWithValue("@HoTen", hlv.HoTen);
             cmd.Parameters.AddWithValue("@GioiTinh", hlv.GioiTinh);
             cmd.Parameters.AddWithValue("@SDT", hlv.SDT);
             cmd.Parameters.AddWithValue("@ChuyenMon", hlv.ChuyenMon);
             cmd.Parameters.AddWithValue("@Luong", (object?)hlv.Luong ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@TrangThai", hlv.TrangThai);
             return cmd.ExecuteNonQuery() > 0;
         }
 
@@ -75,7 +72,7 @@ namespace AppGym.DataAccess
             conn.Open();
             using var cmd = new SqlCommand(
                 @"UPDATE HuanLuyenVien SET HoTen=@HoTen, GioiTinh=@GioiTinh, SDT=@SDT,
-                  ChuyenMon=@ChuyenMon, Luong=@Luong, TrangThai=@TrangThai
+                  ChuyenMon=@ChuyenMon, Luong=@Luong
                   WHERE MaHLV=@MaHLV", conn);
             cmd.Parameters.AddWithValue("@MaHLV", hlv.MaHLV);
             cmd.Parameters.AddWithValue("@HoTen", hlv.HoTen);
@@ -83,7 +80,6 @@ namespace AppGym.DataAccess
             cmd.Parameters.AddWithValue("@SDT", hlv.SDT);
             cmd.Parameters.AddWithValue("@ChuyenMon", hlv.ChuyenMon);
             cmd.Parameters.AddWithValue("@Luong", (object?)hlv.Luong ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@TrangThai", hlv.TrangThai);
             return cmd.ExecuteNonQuery() > 0;
         }
 
@@ -100,7 +96,7 @@ namespace AppGym.DataAccess
         {
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
-            using var cmd = new SqlCommand("SELECT COUNT(*) FROM HuanLuyenVien WHERE TrangThai=1", conn);
+            using var cmd = new SqlCommand("SELECT COUNT(*) FROM HuanLuyenVien", conn);
             return (int)cmd.ExecuteScalar();
         }
     }

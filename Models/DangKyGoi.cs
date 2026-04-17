@@ -7,7 +7,6 @@
         public int MaGoi { get; set; }
         public DateTime? NgayBatDau { get; set; }
         public DateTime? NgayHetHan { get; set; }
-        public string TrangThai { get; set; } = "Đang hoạt động";
         public string GhiChu { get; set; } = "";
 
         // Display fields

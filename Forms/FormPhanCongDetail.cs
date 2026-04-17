@@ -65,6 +65,12 @@ namespace AppGym.Forms
             pc.NgayKetThuc = dtpKetThuc.Value.Date;
             pc.GhiChu = txtGhiChu.Text.Trim();
 
+            if (pc.NgayKetThuc < pc.NgayBatDau)
+            {
+                MessageBox.Show("Ngày kết thúc phải sau ngày bắt đầu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var dao = new PhanCongDAO();
             try
             {

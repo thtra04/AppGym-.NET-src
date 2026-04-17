@@ -22,7 +22,6 @@ namespace AppGym.Forms
             txtThoiHan.Text = gt.ThoiHan?.ToString() ?? "";
             txtGia.Text = gt.Gia?.ToString() ?? "";
             txtMoTa.Text = gt.MoTa;
-            chkTrangThai.Checked = gt.TrangThai;
         }
 
         private void BtnSave_Click(object? sender, EventArgs e)
@@ -38,7 +37,6 @@ namespace AppGym.Forms
             gt.ThoiHan = int.TryParse(txtThoiHan.Text, out var th) ? th : null;
             gt.Gia = decimal.TryParse(txtGia.Text, out var g) ? g : null;
             gt.MoTa = txtMoTa.Text.Trim();
-            gt.TrangThai = chkTrangThai.Checked;
 
             var dao = new GoiTapDAO();
             try

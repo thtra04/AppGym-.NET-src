@@ -8,6 +8,5 @@ namespace AppGym.Models
         public string SDT { get; set; } = "";
         public string ChuyenMon { get; set; } = "";
         public decimal? Luong { get; set; }
-        public bool TrangThai { get; set; } = true;
     }
 }

@@ -20,8 +20,7 @@ namespace AppGym.DataAccess
                     TenGoi = reader.IsDBNull(reader.GetOrdinal("TenGoi")) ? "" : reader.GetString(reader.GetOrdinal("TenGoi")),
                     ThoiHan = reader.IsDBNull(reader.GetOrdinal("ThoiHan")) ? null : reader.GetInt32(reader.GetOrdinal("ThoiHan")),
                     Gia = reader.IsDBNull(reader.GetOrdinal("Gia")) ? null : reader.GetDecimal(reader.GetOrdinal("Gia")),
-                    MoTa = reader.IsDBNull(reader.GetOrdinal("MoTa")) ? "" : reader.GetString(reader.GetOrdinal("MoTa")),
-                    TrangThai = !reader.IsDBNull(reader.GetOrdinal("TrangThai")) && reader.GetBoolean(reader.GetOrdinal("TrangThai"))
+                    MoTa = reader.IsDBNull(reader.GetOrdinal("MoTa")) ? "" : reader.GetString(reader.GetOrdinal("MoTa"))
                 });
             }
             return list;
@@ -32,13 +31,12 @@ namespace AppGym.DataAccess
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             using var cmd = new SqlCommand(
-                @"INSERT INTO GoiTap (TenGoi, ThoiHan, Gia, MoTa, TrangThai)
-                  VALUES (@TenGoi, @ThoiHan, @Gia, @MoTa, @TrangThai)", conn);
+                @"INSERT INTO GoiTap (TenGoi, ThoiHan, Gia, MoTa)
+                  VALUES (@TenGoi, @ThoiHan, @Gia, @MoTa)", conn);
             cmd.Parameters.AddWithValue("@TenGoi", gt.TenGoi);
             cmd.Parameters.AddWithValue("@ThoiHan", (object?)gt.ThoiHan ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Gia", (object?)gt.Gia ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@MoTa", gt.MoTa);
-            cmd.Parameters.AddWithValue("@TrangThai", gt.TrangThai);
             return cmd.ExecuteNonQuery() > 0;
         }
 
@@ -47,14 +45,13 @@ namespace AppGym.DataAccess
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             using var cmd = new SqlCommand(
-                @"UPDATE GoiTap SET TenGoi=@TenGoi, ThoiHan=@ThoiHan, Gia=@Gia, MoTa=@MoTa, TrangThai=@TrangThai
+                @"UPDATE GoiTap SET TenGoi=@TenGoi, ThoiHan=@ThoiHan, Gia=@Gia, MoTa=@MoTa
                   WHERE MaGoi=@MaGoi", conn);
             cmd.Parameters.AddWithValue("@MaGoi", gt.MaGoi);
             cmd.Parameters.AddWithValue("@TenGoi", gt.TenGoi);
             cmd.Parameters.AddWithValue("@ThoiHan", (object?)gt.ThoiHan ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Gia", (object?)gt.Gia ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@MoTa", gt.MoTa);
-            cmd.Parameters.AddWithValue("@TrangThai", gt.TrangThai);
             return cmd.ExecuteNonQuery() > 0;
         }
 
@@ -71,7 +68,7 @@ namespace AppGym.DataAccess
         {
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
-            using var cmd = new SqlCommand("SELECT COUNT(*) FROM GoiTap WHERE TrangThai=1", conn);
+            using var cmd = new SqlCommand("SELECT COUNT(*) FROM GoiTap", conn);
             return (int)cmd.ExecuteScalar();
         }
     }

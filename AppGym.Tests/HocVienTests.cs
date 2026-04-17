@@ -5,7 +5,7 @@ namespace AppGym.Tests;
 
 /// <summary>
 /// TC_HV_01 ? TC_HV_10
-/// Ki?m tra CRUD và tìm ki?m h?c viên trong HocVienDAO
+/// Ki?m tra CRUD vï¿½ tï¿½m ki?m h?c viï¿½n trong HocVienDAO
 /// </summary>
 [TestFixture]
 [Category("Hoc vien")]
@@ -38,11 +38,10 @@ public class HocVienTests : TestBase
         NgaySinh   = new DateTime(1995, 1, 1),
         SDT        = "0901234567",
         Email      = $"test{suffix}@gmail.com",
-        NgayDangKy = DateTime.Today,
-        TrangThai  = true
+        NgayDangKy = DateTime.Today
     };
 
-    // ?? Helper: Insert và l?y l?i ID ??????????????????????????????????
+    // ?? Helper: Insert vï¿½ l?y l?i ID ??????????????????????????????????
     private int InsertAndGetId(HocVien hv)
     {
         _dao.Insert(hv);
@@ -51,9 +50,9 @@ public class HocVienTests : TestBase
         return inserted?.MaHV ?? -1;
     }
 
-    // TC_HV_01 – Positive
+    // TC_HV_01 ï¿½ Positive
     [Test]
-    [Description("TC_HV_01: Thêm h?c viên h?p l? thành công")]
+    [Description("TC_HV_01: Thï¿½m h?c viï¿½n h?p l? thï¿½nh cï¿½ng")]
     public void Insert_ValidHocVien_ReturnsTrue()
     {
         var hv = MakeTestHocVien("_01");
@@ -63,12 +62,12 @@ public class HocVienTests : TestBase
         Assert.That(ok, Is.True);
         var list = _dao.GetAll();
         _insertedId = list.FirstOrDefault(x => x.HoTen == hv.HoTen)?.MaHV ?? -1;
-        Assert.That(list.Any(x => x.HoTen == hv.HoTen), Is.True, "H?c viên ph?i xu?t hi?n trong danh sách");
+        Assert.That(list.Any(x => x.HoTen == hv.HoTen), Is.True, "H?c viï¿½n ph?i xu?t hi?n trong danh sï¿½ch");
     }
 
-    // TC_HV_02 – Negative: validate ? t?ng form (HoTen không r?ng)
+    // TC_HV_02 ï¿½ Negative: validate ? t?ng form (HoTen khï¿½ng r?ng)
     [Test]
-    [Description("TC_HV_02: HoTen r?ng – validation phát hi?n tr??c khi g?i DAO")]
+    [Description("TC_HV_02: HoTen r?ng ï¿½ validation phï¿½t hi?n tr??c khi g?i DAO")]
     public void Insert_EmptyHoTen_ValidationFails()
     {
         string hoTen = "";
@@ -78,9 +77,9 @@ public class HocVienTests : TestBase
         Assert.That(isValid, Is.False, "Validation ph?i t? ch?i HoTen r?ng");
     }
 
-    // TC_HV_03 – Positive
+    // TC_HV_03 ï¿½ Positive
     [Test]
-    [Description("TC_HV_03: S?a thông tin h?c viên thành công")]
+    [Description("TC_HV_03: S?a thï¿½ng tin h?c viï¿½n thï¿½nh cï¿½ng")]
     public void Update_HocVien_UpdatesSuccessfully()
     {
         var hv = MakeTestHocVien("_03");
@@ -97,9 +96,9 @@ public class HocVienTests : TestBase
         Assert.That(updated.SDT, Is.EqualTo("0987654321"));
     }
 
-    // TC_HV_04 – Positive
+    // TC_HV_04 ï¿½ Positive
     [Test]
-    [Description("TC_HV_04: Xóa h?c viên ch?a có ??ng ký gói thành công")]
+    [Description("TC_HV_04: Xï¿½a h?c viï¿½n ch?a cï¿½ ??ng kï¿½ gï¿½i thï¿½nh cï¿½ng")]
     public void Delete_HocVienWithNoDangKy_ReturnsTrue()
     {
         var hv = MakeTestHocVien("_04");
@@ -113,24 +112,24 @@ public class HocVienTests : TestBase
         _insertedId = -1;
     }
 
-    // TC_HV_05 – Negative (FK violation)
+    // TC_HV_05 ï¿½ Negative (FK violation)
     [Test]
-    [Description("TC_HV_05: Xóa h?c viên ?ang có ??ng ký gói ném ra SqlException (FK violation)")]
+    [Description("TC_HV_05: Xï¿½a h?c viï¿½n ?ang cï¿½ ??ng kï¿½ gï¿½i nï¿½m ra SqlException (FK violation)")]
     public void Delete_HocVienWithDangKy_ThrowsSqlException()
     {
-        // C?n có ít nh?t 1 h?c viên có ??ng ký trong DB
+        // C?n cï¿½ ï¿½t nh?t 1 h?c viï¿½n cï¿½ ??ng kï¿½ trong DB
         var allDK = new DangKyGoiDAO().GetAll();
         if (!allDK.Any())
-            Assert.Ignore("Không có ??ng ký gói nào trong DB ?? test FK.");
+            Assert.Ignore("Khï¿½ng cï¿½ ??ng kï¿½ gï¿½i nï¿½o trong DB ?? test FK.");
 
         int maHV = allDK.First().MaHV;
 
         Assert.Throws<Microsoft.Data.SqlClient.SqlException>(() => _dao.Delete(maHV));
     }
 
-    // TC_HV_06 – Positive
+    // TC_HV_06 ï¿½ Positive
     [Test]
-    [Description("TC_HV_06: Tìm ki?m h?c viên theo tên tr? v? ?úng k?t qu?")]
+    [Description("TC_HV_06: Tï¿½m ki?m h?c viï¿½n theo tï¿½n tr? v? ?ï¿½ng k?t qu?")]
     public void Search_ByName_ReturnsMatchingResults()
     {
         var hv = MakeTestHocVien("_06");
@@ -143,9 +142,9 @@ public class HocVienTests : TestBase
         Assert.That(results.All(x => x.HoTen.Contains("TEST_Nguyen")), Is.True);
     }
 
-    // TC_HV_07 – Positive
+    // TC_HV_07 ï¿½ Positive
     [Test]
-    [Description("TC_HV_07: Tìm ki?m h?c viên theo S?T tr? v? ?úng k?t qu?")]
+    [Description("TC_HV_07: Tï¿½m ki?m h?c viï¿½n theo S?T tr? v? ?ï¿½ng k?t qu?")]
     public void Search_BySdt_ReturnsMatchingResults()
     {
         var hv = MakeTestHocVien("_07");
@@ -158,9 +157,9 @@ public class HocVienTests : TestBase
         Assert.That(results.Any(x => x.SDT == "0909111222"), Is.True);
     }
 
-    // TC_HV_08 – Negative
+    // TC_HV_08 ï¿½ Negative
     [Test]
-    [Description("TC_HV_08: Tìm ki?m t? khóa không t?n t?i tr? v? danh sách r?ng")]
+    [Description("TC_HV_08: Tï¿½m ki?m t? khï¿½a khï¿½ng t?n t?i tr? v? danh sï¿½ch r?ng")]
     public void Search_NoMatch_ReturnsEmptyList()
     {
         var results = _dao.Search("xyzxyz_khong_ton_tai_999");
@@ -168,9 +167,9 @@ public class HocVienTests : TestBase
         Assert.That(results, Is.Empty);
     }
 
-    // TC_HV_09 – Positive
+    // TC_HV_09 ï¿½ Positive
     [Test]
-    [Description("TC_HV_09: GetAll() tr? v? toàn b? danh sách không l?i")]
+    [Description("TC_HV_09: GetAll() tr? v? toï¿½n b? danh sï¿½ch khï¿½ng l?i")]
     public void GetAll_ReturnsListWithoutError()
     {
         Assert.DoesNotThrow(() =>
@@ -180,9 +179,9 @@ public class HocVienTests : TestBase
         });
     }
 
-    // TC_HV_10 – Positive
+    // TC_HV_10 ï¿½ Positive
     [Test]
-    [Description("TC_HV_10: Count() tr? v? s? h?c viên ?ang ho?t ??ng >= 0")]
+    [Description("TC_HV_10: Count() tr? v? s? h?c viï¿½n ?ang ho?t ??ng >= 0")]
     public void Count_ReturnsNonNegativeNumber()
     {
         int count = _dao.Count();

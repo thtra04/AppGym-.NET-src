@@ -38,6 +38,12 @@ namespace AppGym.Forms
             ca.GioBatDau = dtpBatDau.Value.TimeOfDay;
             ca.GioKetThuc = dtpKetThuc.Value.TimeOfDay;
 
+            if (ca.GioKetThuc <= ca.GioBatDau)
+            {
+                MessageBox.Show("Giờ kết thúc phải sau giờ bắt đầu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var dao = new CaLamDAO();
             try
             {
