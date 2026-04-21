@@ -59,7 +59,15 @@ static class Program
 
     private static bool PromptForDbConfig(string message)
     {
-        MessageBox.Show(message, "Cấu hình kết nối", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show(
+            message + "\n\nỞ hộp thoại tiếp theo:\n" +
+            "  1. Chọn Server (vd: (local)\\SQLEXPRESS, (localdb)\\MSSQLLocalDB).\n" +
+            "  2. Bấm \"Kiểm tra\" để thử kết nối.\n" +
+            "  3. Nếu database chưa có, bấm \"Tạo DB mới\" để tự cài.\n" +
+            "  4. Bấm \"Lưu & Tiếp tục\".",
+            "Cấu hình kết nối SQL Server",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
         using var dlg = new FormDbConnection();
         return dlg.ShowDialog() == DialogResult.OK;
     }

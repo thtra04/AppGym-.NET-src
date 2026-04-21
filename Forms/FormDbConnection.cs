@@ -9,6 +9,7 @@ namespace AppGym.Forms
         private readonly CheckBox _chkWindows = new();
         private readonly TextBox _txtUser = new();
         private readonly TextBox _txtPass = new();
+        private readonly Button _btnCreate = new();
         private readonly Button _btnTest = new();
         private readonly Button _btnSave = new();
         private readonly Button _btnCancel = new();
@@ -77,7 +78,7 @@ namespace AppGym.Forms
 
             _btnTest.Text = "Kiểm tra";
             _btnTest.Location = new Point(20, 275);
-            _btnTest.Size = new Size(110, 36);
+            _btnTest.Size = new Size(100, 36);
             _btnTest.FlatStyle = FlatStyle.Flat;
             _btnTest.BackColor = Color.FromArgb(52, 152, 219);
             _btnTest.ForeColor = Color.White;
@@ -85,9 +86,19 @@ namespace AppGym.Forms
             _btnTest.Click += (_, _) => DoTest();
             Controls.Add(_btnTest);
 
+            _btnCreate.Text = "Tạo DB mới";
+            _btnCreate.Location = new Point(130, 275);
+            _btnCreate.Size = new Size(110, 36);
+            _btnCreate.FlatStyle = FlatStyle.Flat;
+            _btnCreate.BackColor = Color.FromArgb(155, 89, 182);
+            _btnCreate.ForeColor = Color.White;
+            _btnCreate.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            _btnCreate.Click += (_, _) => DoCreate();
+            Controls.Add(_btnCreate);
+
             _btnSave.Text = "Lưu & Tiếp tục";
-            _btnSave.Location = new Point(260, 275);
-            _btnSave.Size = new Size(140, 36);
+            _btnSave.Location = new Point(250, 275);
+            _btnSave.Size = new Size(150, 36);
             _btnSave.FlatStyle = FlatStyle.Flat;
             _btnSave.BackColor = Color.FromArgb(39, 174, 96);
             _btnSave.ForeColor = Color.White;
@@ -148,12 +159,51 @@ namespace AppGym.Forms
             {
                 _lblStatus.ForeColor = Color.FromArgb(39, 174, 96);
                 _lblStatus.Text = "✓ Kết nối thành công.";
+                return;
             }
-            else
+            // Maybe server is reachable but DB doesn't exist yet.
+            var (srvOk, _) = DbConfig.TryConnectServer(s);
+            if (srvOk && !DbConfig.DatabaseExists(s))
+            {
+                _lblStatus.ForeColor = Color.FromArgb(230, 126, 34);
+                _lblStatus.Text = $"Kết nối được server, nhưng database \"{s.Database}\" chưa tồn tại.\nBấm \"Tạo DB mới\" để tạo tự động.";
+                return;
+            }
+            _lblStatus.ForeColor = Color.FromArgb(231, 76, 60);
+            _lblStatus.Text = "✗ " + err;
+        }
+
+        private void DoCreate()
+        {
+            var s = Collect();
+            var (srvOk, srvErr) = DbConfig.TryConnectServer(s);
+            if (!srvOk)
+            {
+                _lblStatus.ForeColor = Color.FromArgb(231, 76, 60);
+                _lblStatus.Text = "✗ Không kết nối được server: " + srvErr;
+                return;
+            }
+            if (MessageBox.Show(
+                    $"Tạo database \"{s.Database}\" trên server \"{s.Server}\" và nạp dữ liệu mẫu?\n\n" +
+                    "Tài khoản admin mặc định sau khi tạo: admin / admin",
+                    "Xác nhận tạo database",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Question) != DialogResult.OK) return;
+
+            _lblStatus.ForeColor = Color.FromArgb(120, 130, 148);
+            _lblStatus.Text = "Đang tạo database, vui lòng chờ...";
+            Cursor = Cursors.WaitCursor;
+            Application.DoEvents();
+            var (ok, err) = DbConfig.RunSetupScript(s);
+            Cursor = Cursors.Default;
+            if (!ok)
             {
                 _lblStatus.ForeColor = Color.FromArgb(231, 76, 60);
                 _lblStatus.Text = "✗ " + err;
+                return;
             }
+            _lblStatus.ForeColor = Color.FromArgb(39, 174, 96);
+            _lblStatus.Text = "✓ Đã tạo database. Bấm \"Lưu & Tiếp tục\" để vào ứng dụng.";
         }
 
         private void DoSave()

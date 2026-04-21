@@ -79,6 +79,109 @@ namespace AppGym.Helpers
             }
         }
 
+        /// <summary>Try to connect to the server only (master DB) to verify the instance is reachable.</summary>
+        public static (bool ok, string? error) TryConnectServer(Settings s)
+        {
+            try
+            {
+                var b = new SqlConnectionStringBuilder(BuildConnectionString(s)) { InitialCatalog = "master" };
+                using var c = new SqlConnection(b.ConnectionString);
+                c.Open();
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public static bool DatabaseExists(Settings s)
+        {
+            try
+            {
+                var b = new SqlConnectionStringBuilder(BuildConnectionString(s)) { InitialCatalog = "master" };
+                using var c = new SqlConnection(b.ConnectionString);
+                c.Open();
+                using var cmd = new SqlCommand("SELECT DB_ID(@n)", c);
+                cmd.Parameters.AddWithValue("@n", s.Database);
+                var v = cmd.ExecuteScalar();
+                return v != null && v != DBNull.Value;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
+        /// Run setup_db.sql against the server (must succeed against master) to create the database
+        /// and tables. Returns (ok, error). The script is shipped under {app}\sql\setup_db.sql.
+        /// </summary>
+        public static (bool ok, string? error) RunSetupScript(Settings s)
+        {
+            try
+            {
+                var sqlPath = FindSetupScript();
+                if (sqlPath == null)
+                    return (false, "Không tìm thấy file setup_db.sql trong thư mục cài đặt (sql\\setup_db.sql).");
+
+                var script = File.ReadAllText(sqlPath);
+                var batches = SplitGoBatches(script);
+
+                var b = new SqlConnectionStringBuilder(BuildConnectionString(s)) { InitialCatalog = "master" };
+                using var conn = new SqlConnection(b.ConnectionString);
+                conn.Open();
+
+                foreach (var batch in batches)
+                {
+                    if (string.IsNullOrWhiteSpace(batch)) continue;
+                    using var cmd = new SqlCommand(batch, conn) { CommandTimeout = 60 };
+                    cmd.ExecuteNonQuery();
+                }
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        private static string? FindSetupScript()
+        {
+            string baseDir = AppContext.BaseDirectory;
+            string[] candidates =
+            {
+                Path.Combine(baseDir, "sql", "setup_db.sql"),
+                Path.Combine(baseDir, "setup_db.sql"),
+                Path.Combine(baseDir, "..", "sql", "setup_db.sql"),
+                Path.Combine(baseDir, "..", "..", "..", "setup_db.sql"),
+            };
+            foreach (var p in candidates)
+            {
+                var full = Path.GetFullPath(p);
+                if (File.Exists(full)) return full;
+            }
+            return null;
+        }
+
+        private static List<string> SplitGoBatches(string script)
+        {
+            var lines = script.Replace("\r\n", "\n").Split('\n');
+            var batches = new List<string>();
+            var current = new System.Text.StringBuilder();
+            foreach (var line in lines)
+            {
+                if (line.Trim().Equals("GO", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (current.Length > 0) batches.Add(current.ToString());
+                    current.Clear();
+                }
+                else
+                {
+                    current.AppendLine(line);
+                }
+            }
+            if (current.Length > 0) batches.Add(current.ToString());
+            return batches;
+        }
+
         /// <summary>Apply saved settings to DatabaseHelper. Returns true if connection works.</summary>
         public static bool ApplySaved()
         {
