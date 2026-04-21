@@ -1,4 +1,7 @@
+using AppGym.DataAccess;
 using AppGym.Forms;
+using AppGym.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace AppGym;
 
@@ -7,7 +10,35 @@ static class Program
     [STAThread]
     static void Main()
     {
+        QuestPDF.Settings.License = LicenseType.Community;
         ApplicationConfiguration.Initialize();
+
+        // Apply saved DB settings (if any). If the connection fails, prompt the user to configure.
+        if (!DbConfig.ApplySaved())
+        {
+            if (!PromptForDbConfig("Không kết nối được SQL Server với cấu hình hiện tại. Vui lòng cấu hình lại."))
+                return;
+        }
+
+        while (true)
+        {
+            try
+            {
+                DatabaseSchemaSynchronizer.EnsureSchemaUpToDate();
+                break;
+            }
+            catch (Exception ex)
+            {
+                var choice = MessageBox.Show(
+                    "Không thể đồng bộ cấu trúc dữ liệu trước khi mở ứng dụng:\n" + ex.Message +
+                    "\n\nBấm OK để cấu hình lại kết nối SQL Server, hoặc Cancel để thoát.",
+                    "Lỗi dữ liệu",
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Error);
+                if (choice != DialogResult.OK) return;
+                if (!PromptForDbConfig("Cấu hình lại kết nối SQL Server:")) return;
+            }
+        }
 
         while (true)
         {
@@ -24,5 +55,12 @@ static class Program
                 break;
             }
         }
+    }
+
+    private static bool PromptForDbConfig(string message)
+    {
+        MessageBox.Show(message, "Cấu hình kết nối", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        using var dlg = new FormDbConnection();
+        return dlg.ShowDialog() == DialogResult.OK;
     }
 }

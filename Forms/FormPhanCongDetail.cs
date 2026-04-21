@@ -1,4 +1,4 @@
-using AppGym.DataAccess;
+﻿using AppGym.DataAccess;
 using AppGym.Helpers;
 using AppGym.Models;
 
@@ -7,14 +7,66 @@ namespace AppGym.Forms
     public partial class FormPhanCongDetail : Form
     {
         private PhanCong? _pc;
+        private CheckBox? _chkOnlyUnassigned;
+        private Label? _lblFilterHint;
+        private List<DangKyGoi> _allDangKy = new();
+        private List<DangKyGoi> _unassignedDangKy = new();
+        private bool _suppressDateSync;
 
         public FormPhanCongDetail(PhanCong? pc)
         {
             _pc = pc;
             InitializeComponent();
             Text = _pc == null ? "Thêm Phân công" : "Sửa Phân công";
+            AddUnassignedFilter();
             LoadCombos();
+            cboDangKy.SelectedIndexChanged += CboDangKy_SelectedIndexChanged;
             if (pc != null) LoadData(pc);
+            else CboDangKy_SelectedIndexChanged(cboDangKy, EventArgs.Empty);
+        }
+
+        private void AddUnassignedFilter()
+        {
+            _chkOnlyUnassigned = new CheckBox
+            {
+                Text = "Chỉ hiển thị đăng ký chưa có PT",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9.5F),
+                Location = new Point(180, 104),
+                Checked = _pc == null
+            };
+            _chkOnlyUnassigned.CheckedChanged += (_, _) => RefreshDangKyCombo();
+            Controls.Add(_chkOnlyUnassigned);
+            _chkOnlyUnassigned.BringToFront();
+
+            _lblFilterHint = new Label
+            {
+                Text = "Chỉ hiện những đăng ký chưa được gán PT nào (mỗi đăng ký tối đa 1 PT).",
+                AutoSize = false,
+                Size = new Size(310, 18),
+                Location = new Point(180, 126),
+                Font = new Font("Segoe UI", 8.5F, FontStyle.Italic),
+                ForeColor = Color.FromArgb(120, 130, 148)
+            };
+            Controls.Add(_lblFilterHint);
+            _lblFilterHint.BringToFront();
+        }
+
+        private void CboDangKy_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (_suppressDateSync) return;
+            if (cboDangKy.SelectedItem is not DangKyGoi dk) return;
+            // Auto-fill the assignment dates from the selected registration so the PT contract
+            // spans the student's actual membership period by default.
+            if (dk.NgayBatDau.HasValue) dtpBatDau.Value = ClampToPickerRange(dk.NgayBatDau.Value);
+            if (dk.NgayHetHan.HasValue) dtpKetThuc.Value = ClampToPickerRange(dk.NgayHetHan.Value);
+        }
+
+        private static DateTime ClampToPickerRange(DateTime d)
+        {
+            if (d < DateTimePicker.MinimumDateTime) return DateTimePicker.MinimumDateTime;
+            if (d > DateTimePicker.MaximumDateTime) return DateTimePicker.MaximumDateTime;
+            return d;
         }
 
         private void LoadCombos()
@@ -26,10 +78,9 @@ namespace AppGym.Forms
                 cboHLV.ValueMember = "MaHLV";
                 cboHLV.DataSource = hlvList;
 
-                var dkList = new DangKyGoiDAO().GetAll();
-                cboDangKy.DisplayMember = "TenHV";
-                cboDangKy.ValueMember = "MaDK";
-                cboDangKy.DataSource = dkList;
+                _allDangKy = new DangKyGoiDAO().GetAll();
+                _unassignedDangKy = new PhanCongDAO().GetDangKyChuaPhanCong();
+                RefreshDangKyCombo();
 
                 var caList = new CaLamDAO().GetAll();
                 cboCaLam.DisplayMember = "TenCa";
@@ -39,14 +90,48 @@ namespace AppGym.Forms
             catch { }
         }
 
+        private void RefreshDangKyCombo()
+        {
+            bool onlyUnassigned = _chkOnlyUnassigned?.Checked == true;
+            List<DangKyGoi> source;
+            if (onlyUnassigned)
+            {
+                source = _unassignedDangKy.ToList();
+                if (_pc != null && !source.Any(d => d.MaDK == _pc.MaDK))
+                {
+                    var current = _allDangKy.FirstOrDefault(d => d.MaDK == _pc.MaDK);
+                    if (current != null) source.Insert(0, current);
+                }
+            }
+            else
+            {
+                source = _allDangKy.ToList();
+            }
+
+            _suppressDateSync = true;
+            try
+            {
+                cboDangKy.DisplayMember = "TenHV";
+                cboDangKy.ValueMember = "MaDK";
+                cboDangKy.DataSource = source;
+                if (_pc != null) cboDangKy.SelectedValue = _pc.MaDK;
+            }
+            finally { _suppressDateSync = false; }
+        }
+
         private void LoadData(PhanCong pc)
         {
-            cboHLV.SelectedValue = pc.MaHLV;
-            cboDangKy.SelectedValue = pc.MaDK;
-            if (pc.MaCa.HasValue) cboCaLam.SelectedValue = pc.MaCa.Value;
-            if (pc.NgayBatDau.HasValue) dtpBatDau.Value = pc.NgayBatDau.Value;
-            if (pc.NgayKetThuc.HasValue) dtpKetThuc.Value = pc.NgayKetThuc.Value;
-            txtGhiChu.Text = pc.GhiChu;
+            _suppressDateSync = true;
+            try
+            {
+                cboHLV.SelectedValue = pc.MaHLV;
+                cboDangKy.SelectedValue = pc.MaDK;
+                if (pc.MaCa.HasValue) cboCaLam.SelectedValue = pc.MaCa.Value;
+                if (pc.NgayBatDau.HasValue) dtpBatDau.Value = ClampToPickerRange(pc.NgayBatDau.Value);
+                if (pc.NgayKetThuc.HasValue) dtpKetThuc.Value = ClampToPickerRange(pc.NgayKetThuc.Value);
+                txtGhiChu.Text = pc.GhiChu;
+            }
+            finally { _suppressDateSync = false; }
         }
 
         private void BtnSave_Click(object? sender, EventArgs e)
@@ -72,6 +157,18 @@ namespace AppGym.Forms
             }
 
             var dao = new PhanCongDAO();
+
+            // Mỗi đăng ký gói chỉ có tối đa 1 PT.
+            if (dao.ExistsForDangKy(pc.MaDK, _pc?.MaPC))
+            {
+                MessageBox.Show(
+                    "Đăng ký này đã được phân công một PT. Mỗi học viên/gói tập chỉ được phân công 1 PT.",
+                    "Không thể phân công",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
                 bool ok = _pc == null ? dao.Insert(pc) : dao.Update(pc);

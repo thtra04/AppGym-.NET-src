@@ -8,11 +8,15 @@
         private DateTimePicker dtpNgayTT;
         private TextBox txtSoTien;
         private ComboBox cboHinhThuc;
+        private ComboBox cboNguoiLap;
+        private ComboBox cboNguoiThanhToan;
         private TextBox txtGhiChu;
         private Label lblDangKy;
         private Label lblNgayTT;
         private Label lblSoTien;
         private Label lblHinhThuc;
+        private Label lblNguoiLap;
+        private Label lblNguoiThanhToan;
         private Label lblGhiChu;
         private Button btnSave;
         private Button btnCancel;
@@ -29,11 +33,15 @@
             this.dtpNgayTT = new DateTimePicker();
             this.txtSoTien = new TextBox();
             this.cboHinhThuc = new ComboBox();
+            this.cboNguoiLap = new ComboBox();
+            this.cboNguoiThanhToan = new ComboBox();
             this.txtGhiChu = new TextBox();
             this.lblDangKy = new Label();
             this.lblNgayTT = new Label();
             this.lblSoTien = new Label();
             this.lblHinhThuc = new Label();
+            this.lblNguoiLap = new Label();
+            this.lblNguoiThanhToan = new Label();
             this.lblGhiChu = new Label();
             this.btnSave = new Button();
             this.btnCancel = new Button();
@@ -93,16 +101,42 @@
             this.cboHinhThuc.Size = new Size(300, 27);
             this.cboHinhThuc.SelectedIndex = 0;
 
+            // lblNguoiLap
+            this.lblNguoiLap.AutoSize = true;
+            this.lblNguoiLap.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            this.lblNguoiLap.Location = new Point(20, 231);
+            this.lblNguoiLap.Text = "Người lên HĐ:";
+
+            // cboNguoiLap
+            this.cboNguoiLap.DropDownStyle = ComboBoxStyle.DropDownList;
+            this.cboNguoiLap.Font = new Font("Segoe UI", 10F);
+            this.cboNguoiLap.Location = new Point(170, 228);
+            this.cboNguoiLap.Name = "cboNguoiLap";
+            this.cboNguoiLap.Size = new Size(300, 27);
+
+            // lblNguoiThanhToan
+            this.lblNguoiThanhToan.AutoSize = true;
+            this.lblNguoiThanhToan.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            this.lblNguoiThanhToan.Location = new Point(20, 283);
+            this.lblNguoiThanhToan.Text = "Người thanh toán:";
+
+            // cboNguoiThanhToan
+            this.cboNguoiThanhToan.DropDownStyle = ComboBoxStyle.DropDownList;
+            this.cboNguoiThanhToan.Font = new Font("Segoe UI", 10F);
+            this.cboNguoiThanhToan.Location = new Point(170, 280);
+            this.cboNguoiThanhToan.Name = "cboNguoiThanhToan";
+            this.cboNguoiThanhToan.Size = new Size(300, 27);
+
             // lblGhiChu
             this.lblGhiChu.AutoSize = true;
             this.lblGhiChu.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            this.lblGhiChu.Location = new Point(20, 231);
+            this.lblGhiChu.Location = new Point(20, 335);
             this.lblGhiChu.Text = "Ghi chú:";
 
             // txtGhiChu
             this.txtGhiChu.BorderStyle = BorderStyle.FixedSingle;
             this.txtGhiChu.Font = new Font("Segoe UI", 10F);
-            this.txtGhiChu.Location = new Point(170, 228);
+            this.txtGhiChu.Location = new Point(170, 332);
             this.txtGhiChu.Name = "txtGhiChu";
             this.txtGhiChu.Size = new Size(300, 27);
 
@@ -111,7 +145,7 @@
             this.btnSave.FlatStyle = FlatStyle.Flat;
             this.btnSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             this.btnSave.ForeColor = Color.White;
-            this.btnSave.Location = new Point(120, 280);
+            this.btnSave.Location = new Point(120, 384);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new Size(130, 40);
             this.btnSave.Text = "Lưu";
@@ -122,7 +156,7 @@
             this.btnCancel.FlatStyle = FlatStyle.Flat;
             this.btnCancel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             this.btnCancel.ForeColor = Color.White;
-            this.btnCancel.Location = new Point(270, 280);
+            this.btnCancel.Location = new Point(270, 384);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new Size(130, 40);
             this.btnCancel.Text = "Hủy";
@@ -132,7 +166,7 @@
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.FromArgb(245, 246, 250);
-            this.ClientSize = new Size(510, 345);
+            this.ClientSize = new Size(510, 446);
             this.Controls.Add(this.lblDangKy);
             this.Controls.Add(this.cboDangKy);
             this.Controls.Add(this.lblNgayTT);
@@ -141,6 +175,10 @@
             this.Controls.Add(this.txtSoTien);
             this.Controls.Add(this.lblHinhThuc);
             this.Controls.Add(this.cboHinhThuc);
+            this.Controls.Add(this.lblNguoiLap);
+            this.Controls.Add(this.cboNguoiLap);
+            this.Controls.Add(this.lblNguoiThanhToan);
+            this.Controls.Add(this.cboNguoiThanhToan);
             this.Controls.Add(this.lblGhiChu);
             this.Controls.Add(this.txtGhiChu);
             this.Controls.Add(this.btnSave);

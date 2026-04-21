@@ -25,6 +25,33 @@ namespace AppGym.DataAccess
             return list;
         }
 
+        public List<CaLam> Search(string keyword)
+        {
+            var list = new List<CaLam>();
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+            using var cmd = new SqlCommand(
+                @"SELECT * FROM CaLam
+                  WHERE CAST(MaCa AS NVARCHAR(20)) LIKE @kw
+                     OR TenCa LIKE @kw
+                     OR LEFT(CONVERT(VARCHAR(8), GioBatDau), 5) LIKE @kw
+                     OR LEFT(CONVERT(VARCHAR(8), GioKetThuc), 5) LIKE @kw
+                  ORDER BY MaCa", conn);
+            cmd.Parameters.AddWithValue("@kw", $"%{keyword}%");
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new CaLam
+                {
+                    MaCa = reader.GetInt32(reader.GetOrdinal("MaCa")),
+                    TenCa = reader.IsDBNull(reader.GetOrdinal("TenCa")) ? "" : reader.GetString(reader.GetOrdinal("TenCa")),
+                    GioBatDau = reader.IsDBNull(reader.GetOrdinal("GioBatDau")) ? null : reader.GetTimeSpan(reader.GetOrdinal("GioBatDau")),
+                    GioKetThuc = reader.IsDBNull(reader.GetOrdinal("GioKetThuc")) ? null : reader.GetTimeSpan(reader.GetOrdinal("GioKetThuc"))
+                });
+            }
+            return list;
+        }
+
         public bool Insert(CaLam ca)
         {
             using var conn = DatabaseHelper.GetConnection();

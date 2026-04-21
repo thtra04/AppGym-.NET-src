@@ -15,7 +15,7 @@ public class BugReportTests : TestBase
     {
         var user = new TaiKhoanDAO().Login("admin", "123");
         if (user == null) Assert.Ignore("Admin account not found.");
-        Assert.That(user!.HoTen, Does.Not.Contain("?"));
+        Assert.That(user.HoTen, Does.Not.Contain("?"));
     }
 
     [Test, Description("TC_BUG_02: Delete HocVien with DangKy throws SqlException")]
@@ -39,12 +39,20 @@ public class BugReportTests : TestBase
     {
         var dkList = new DangKyGoiDAO().GetAll();
         if (!dkList.Any()) Assert.Ignore("Need DangKyGoi.");
-        var hd = new HoaDon { MaDK = dkList.First().MaDK, NgayThanhToan = DateTime.Today, SoTien = 1, HinhThucTT = "", GhiChu = "" };
+        var hd = new HoaDon
+        {
+            MaDK = dkList.First().MaDK,
+            NgayThanhToan = DateTime.Today,
+            SoTien = 1,
+            HinhThucTT = "",
+            GhiChu = ""
+        };
+
         Assert.DoesNotThrow(() => _inserted = new HoaDonDAO().Insert(hd));
-        // Cleanup
         var inserted = new HoaDonDAO().GetAll().FirstOrDefault(x => x.MaDK == hd.MaDK && x.SoTien == 1 && x.GhiChu == "");
         if (inserted != null) Cleanup($"DELETE FROM HoaDon WHERE MaHD={inserted.MaHD}");
     }
+
     private bool _inserted;
 
     [Test, Description("TC_BUG_05: PhanCong empty GhiChu does not crash")]
@@ -53,7 +61,16 @@ public class BugReportTests : TestBase
         var hlvList = new HuanLuyenVienDAO().GetAll();
         var dkList = new DangKyGoiDAO().GetAll();
         if (!hlvList.Any() || !dkList.Any()) Assert.Ignore("Need HLV and DangKyGoi.");
-        var pc = new PhanCong { MaHLV = hlvList.First().MaHLV, MaDK = dkList.First().MaDK, MaCa = null, NgayBatDau = DateTime.Today, NgayKetThuc = DateTime.Today.AddDays(30), GhiChu = "" };
+        var pc = new PhanCong
+        {
+            MaHLV = hlvList.First().MaHLV,
+            MaDK = dkList.First().MaDK,
+            MaCa = null,
+            NgayBatDau = DateTime.Today,
+            NgayKetThuc = DateTime.Today.AddDays(30),
+            GhiChu = ""
+        };
+
         bool ok = false;
         Assert.DoesNotThrow(() => ok = new PhanCongDAO().Insert(pc));
         Assert.That(ok, Is.True);
@@ -78,11 +95,11 @@ public class BugReportTests : TestBase
         Assert.That(group.All(x => x.TenHV == group[0].TenHV), Is.True);
     }
 
-    [Test, Description("TC_BUG_08: GoiTapDAO missing Search method")]
-    public void Bug08_GoiTapDAO_MissingSearchMethod()
+    [Test, Description("TC_BUG_08: GoiTapDAO has Search method for UI lookup")]
+    public void Bug08_GoiTapDAO_SearchMethodExists()
     {
         var methods = typeof(GoiTapDAO).GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        Assert.That(methods.Any(m => m.Name == "Search"), Is.False);
+        Assert.That(methods.Any(m => m.Name == "Search"), Is.True);
     }
 
     [Test, Description("TC_BUG_09: DangKyGoiDAO missing Search method")]
@@ -95,7 +112,7 @@ public class BugReportTests : TestBase
     [Test, Description("TC_BUG_10: Dashboard cards fit within MinimumWidth after fix")]
     public void Bug10_DashboardCards_OverflowMinimumWidth()
     {
-        int totalWidth = 5 * (195 + 12); // 1035
+        int totalWidth = 5 * (195 + 12);
         Assert.That(totalWidth, Is.LessThanOrEqualTo(1100));
     }
 }

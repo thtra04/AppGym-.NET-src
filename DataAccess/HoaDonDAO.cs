@@ -12,11 +12,15 @@ namespace AppGym.DataAccess
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             using var cmd = new SqlCommand(
-                @"SELECT hd.*, hv.HoTen AS TenHV, gt.TenGoi
+                @"SELECT hd.*, hv.HoTen AS TenHV, gt.TenGoi,
+                         COALESCE(NULLIF(tkLap.HoTen, N''), tkLap.TenDangNhap, N'Không rõ') AS TenNguoiLap,
+                         COALESCE(NULLIF(tkTT.HoTen, N''), tkTT.TenDangNhap, N'Không rõ') AS TenNguoiThanhToan
                   FROM HoaDon hd
                   JOIN DangKyGoi dk ON hd.MaDK = dk.MaDK
                   JOIN HocVien hv ON dk.MaHV = hv.MaHV
                   JOIN GoiTap gt ON dk.MaGoi = gt.MaGoi
+                  LEFT JOIN TaiKhoan tkLap ON hd.MaNguoiLap = tkLap.MaTK
+                  LEFT JOIN TaiKhoan tkTT ON hd.MaNguoiThanhToan = tkTT.MaTK
                   ORDER BY hd.MaHD DESC", conn);
             using var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -29,57 +33,12 @@ namespace AppGym.DataAccess
                     SoTien = reader.IsDBNull(reader.GetOrdinal("SoTien")) ? null : reader.GetDecimal(reader.GetOrdinal("SoTien")),
                     HinhThucTT = reader.IsDBNull(reader.GetOrdinal("HinhThucTT")) ? "" : reader.GetString(reader.GetOrdinal("HinhThucTT")),
                     GhiChu = reader.IsDBNull(reader.GetOrdinal("GhiChu")) ? "" : reader.GetString(reader.GetOrdinal("GhiChu")),
+                    MaNguoiLap = reader.IsDBNull(reader.GetOrdinal("MaNguoiLap")) ? null : reader.GetInt32(reader.GetOrdinal("MaNguoiLap")),
+                    MaNguoiThanhToan = reader.IsDBNull(reader.GetOrdinal("MaNguoiThanhToan")) ? null : reader.GetInt32(reader.GetOrdinal("MaNguoiThanhToan")),
                     TenHV = reader.IsDBNull(reader.GetOrdinal("TenHV")) ? "" : reader.GetString(reader.GetOrdinal("TenHV")),
-                    TenGoi = reader.IsDBNull(reader.GetOrdinal("TenGoi")) ? "" : reader.GetString(reader.GetOrdinal("TenGoi"))
-                });
-            }
-            return list;
-        }
-
-        public List<ThanhToanReportItem> GetInvoiceReport(string? keyword = null)
-        {
-            var list = new List<ThanhToanReportItem>();
-            using var conn = DatabaseHelper.GetConnection();
-            conn.Open();
-
-            var key = keyword?.Trim() ?? string.Empty;
-            var sql = new StringBuilder(@"
-SELECT hd.MaHD, dk.MaDK, dk.MaHV, hv.HoTen, dk.MaGoi, gt.TenGoi,
-       dk.NgayBatDau, dk.NgayHetHan, hd.NgayThanhToan, hd.SoTien, hd.HinhThucTT, hd.GhiChu
-FROM HoaDon hd
-JOIN DangKyGoi dk ON hd.MaDK = dk.MaDK
-JOIN HocVien hv ON dk.MaHV = hv.MaHV
-JOIN GoiTap gt ON dk.MaGoi = gt.MaGoi");
-            if (!string.IsNullOrWhiteSpace(key))
-            {
-                sql.Append(@" WHERE hv.HoTen LIKE @kw OR gt.TenGoi LIKE @kw OR hv.SDT LIKE @kw
-                              OR CAST(hd.MaHD AS NVARCHAR(20)) LIKE @kw OR CAST(dk.MaDK AS NVARCHAR(20)) LIKE @kw");
-            }
-            sql.Append(" ORDER BY hd.NgayThanhToan DESC, hd.MaHD DESC");
-
-            using var cmd = new SqlCommand(sql.ToString(), conn);
-            if (!string.IsNullOrWhiteSpace(key))
-            {
-                cmd.Parameters.AddWithValue("@kw", $"%{key}%");
-            }
-
-            using var reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                list.Add(new ThanhToanReportItem
-                {
-                    MaHD = reader.GetInt32(reader.GetOrdinal("MaHD")),
-                    MaDK = reader.GetInt32(reader.GetOrdinal("MaDK")),
-                    MaHV = reader.IsDBNull(reader.GetOrdinal("MaHV")) ? 0 : reader.GetInt32(reader.GetOrdinal("MaHV")),
-                    HoTen = reader.IsDBNull(reader.GetOrdinal("HoTen")) ? "" : reader.GetString(reader.GetOrdinal("HoTen")),
-                    MaGoi = reader.IsDBNull(reader.GetOrdinal("MaGoi")) ? 0 : reader.GetInt32(reader.GetOrdinal("MaGoi")),
                     TenGoi = reader.IsDBNull(reader.GetOrdinal("TenGoi")) ? "" : reader.GetString(reader.GetOrdinal("TenGoi")),
-                    NgayBatDau = reader.IsDBNull(reader.GetOrdinal("NgayBatDau")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayBatDau")),
-                    NgayHetHan = reader.IsDBNull(reader.GetOrdinal("NgayHetHan")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayHetHan")),
-                    NgayThanhToan = reader.IsDBNull(reader.GetOrdinal("NgayThanhToan")) ? null : reader.GetDateTime(reader.GetOrdinal("NgayThanhToan")),
-                    SoTien = reader.IsDBNull(reader.GetOrdinal("SoTien")) ? null : reader.GetDecimal(reader.GetOrdinal("SoTien")),
-                    HinhThucTT = reader.IsDBNull(reader.GetOrdinal("HinhThucTT")) ? "" : reader.GetString(reader.GetOrdinal("HinhThucTT")),
-                    GhiChu = reader.IsDBNull(reader.GetOrdinal("GhiChu")) ? "" : reader.GetString(reader.GetOrdinal("GhiChu"))
+                    TenNguoiLap = reader.IsDBNull(reader.GetOrdinal("TenNguoiLap")) ? "" : reader.GetString(reader.GetOrdinal("TenNguoiLap")),
+                    TenNguoiThanhToan = reader.IsDBNull(reader.GetOrdinal("TenNguoiThanhToan")) ? "" : reader.GetString(reader.GetOrdinal("TenNguoiThanhToan"))
                 });
             }
             return list;
@@ -162,13 +121,15 @@ LEFT JOIN (
             using var conn = DatabaseHelper.GetConnection();
             conn.Open();
             using var cmd = new SqlCommand(
-                @"INSERT INTO HoaDon (MaDK, NgayThanhToan, SoTien, HinhThucTT, GhiChu)
-                  VALUES (@MaDK, @NgayThanhToan, @SoTien, @HinhThucTT, @GhiChu)", conn);
+                @"INSERT INTO HoaDon (MaDK, NgayThanhToan, SoTien, HinhThucTT, GhiChu, MaNguoiLap, MaNguoiThanhToan)
+                  VALUES (@MaDK, @NgayThanhToan, @SoTien, @HinhThucTT, @GhiChu, @MaNguoiLap, @MaNguoiThanhToan)", conn);
             cmd.Parameters.AddWithValue("@MaDK", hd.MaDK);
             cmd.Parameters.AddWithValue("@NgayThanhToan", (object?)hd.NgayThanhToan ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@SoTien", (object?)hd.SoTien ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@HinhThucTT", hd.HinhThucTT);
             cmd.Parameters.AddWithValue("@GhiChu", hd.GhiChu);
+            cmd.Parameters.AddWithValue("@MaNguoiLap", (object?)hd.MaNguoiLap ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@MaNguoiThanhToan", (object?)hd.MaNguoiThanhToan ?? DBNull.Value);
             return cmd.ExecuteNonQuery() > 0;
         }
 
@@ -178,7 +139,8 @@ LEFT JOIN (
             conn.Open();
             using var cmd = new SqlCommand(
                 @"UPDATE HoaDon SET MaDK=@MaDK, NgayThanhToan=@NgayThanhToan,
-                  SoTien=@SoTien, HinhThucTT=@HinhThucTT, GhiChu=@GhiChu
+                  SoTien=@SoTien, HinhThucTT=@HinhThucTT, GhiChu=@GhiChu,
+                  MaNguoiLap=@MaNguoiLap, MaNguoiThanhToan=@MaNguoiThanhToan
                   WHERE MaHD=@MaHD", conn);
             cmd.Parameters.AddWithValue("@MaHD", hd.MaHD);
             cmd.Parameters.AddWithValue("@MaDK", hd.MaDK);
@@ -186,6 +148,8 @@ LEFT JOIN (
             cmd.Parameters.AddWithValue("@SoTien", (object?)hd.SoTien ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@HinhThucTT", hd.HinhThucTT);
             cmd.Parameters.AddWithValue("@GhiChu", hd.GhiChu);
+            cmd.Parameters.AddWithValue("@MaNguoiLap", (object?)hd.MaNguoiLap ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@MaNguoiThanhToan", (object?)hd.MaNguoiThanhToan ?? DBNull.Value);
             return cmd.ExecuteNonQuery() > 0;
         }
 

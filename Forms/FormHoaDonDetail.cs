@@ -5,38 +5,41 @@ namespace AppGym.Forms
 {
     public partial class FormHoaDonDetail : Form
     {
-        private HoaDon? _hd;
-        private List<DangKyGoi> _dkList = new();
+        private readonly HoaDon? _hoaDon;
+        private readonly TaiKhoan _currentUser;
+        private readonly int? _preselectedMaDK;
+        private List<DangKyGoi> _dangKyList = new();
         private List<GoiTap> _goiList = new();
-        private Dictionary<int, DangKyGoi> _dkMap = new();
+        private Dictionary<int, DangKyGoi> _dangKyMap = new();
 
-        public FormHoaDonDetail(HoaDon? hd)
+        public FormHoaDonDetail(HoaDon? hoaDon, TaiKhoan currentUser, int? preselectedMaDK = null)
         {
-            _hd = hd;
+            _hoaDon = hoaDon;
+            _currentUser = currentUser;
+            _preselectedMaDK = preselectedMaDK;
             InitializeComponent();
-            Text = _hd == null ? "Thêm Hóa đơn" : "Sửa Hóa đơn";
+            Text = _hoaDon == null ? "Thêm hóa đơn" : "Sửa hóa đơn";
             LoadCombos();
-            if (hd != null) LoadData(hd);
+            if (_hoaDon != null)
+            {
+                LoadData(_hoaDon);
+            }
 
             cboDangKy.SelectedIndexChanged += CboDangKy_SelectedIndexChanged;
         }
 
         private void CboDangKy_SelectedIndexChanged(object? sender, EventArgs e)
         {
-            if (_hd != null) return; // don't auto-fill when editing
+            if (_hoaDon != null) return;
             if (cboDangKy.SelectedValue == null) return;
 
-            if (int.TryParse(cboDangKy.SelectedValue.ToString(), out var maDK) && _dkMap.TryGetValue(maDK, out var dk))
+            if (int.TryParse(cboDangKy.SelectedValue.ToString(), out var maDK) && _dangKyMap.TryGetValue(maDK, out var dangKy))
             {
-                try
+                var goi = _goiList.FirstOrDefault(x => x.MaGoi == dangKy.MaGoi);
+                if (goi?.Gia != null)
                 {
-                    var goi = _goiList.FirstOrDefault(g => g.MaGoi == dk.MaGoi);
-                    if (goi?.Gia != null)
-                    {
-                        txtSoTien.Text = goi.Gia.Value.ToString("0");
-                    }
+                    txtSoTien.Text = goi.Gia.Value.ToString("0");
                 }
-                catch { }
             }
         }
 
@@ -44,35 +47,73 @@ namespace AppGym.Forms
         {
             try
             {
-                _dkList = new DangKyGoiDAO().GetAll();
+                _dangKyList = new DangKyGoiDAO().GetAll();
                 _goiList = new GoiTapDAO().GetAll();
-                _dkMap = _dkList.ToDictionary(x => x.MaDK, x => x);
+                _dangKyMap = _dangKyList.ToDictionary(x => x.MaDK, x => x);
 
-                var displayList = _dkList.Select(dk => new
+                var dangKyDisplayList = _dangKyList.Select(dangKy => new
                 {
-                    MaDK = dk.MaDK,
-                    Display = $"{dk.TenHV} - {dk.TenGoi} ({(dk.NgayBatDau?.ToString("dd/MM/yyyy") ?? "N/A")} -> {(dk.NgayHetHan?.ToString("dd/MM/yyyy") ?? "N/A")})"
+                    dangKy.MaDK,
+                    Display = $"{dangKy.TenHV} - {dangKy.TenGoi} ({(dangKy.NgayBatDau?.ToString("dd/MM/yyyy") ?? "N/A")} -> {(dangKy.NgayHetHan?.ToString("dd/MM/yyyy") ?? "N/A")})"
                 }).ToList();
 
                 cboDangKy.DisplayMember = "Display";
                 cboDangKy.ValueMember = "MaDK";
-                cboDangKy.DataSource = displayList;
+                cboDangKy.DataSource = dangKyDisplayList;
+
+                var accountOptions = new TaiKhoanDAO().GetAll()
+                    .Select(x => new
+                    {
+                        x.MaTK,
+                        Display = $"{x.HoTen} ({x.TenDangNhap}){(x.HoatDong ? "" : " - tạm khóa")}"
+                    })
+                    .ToList();
+
+                cboNguoiLap.DisplayMember = "Display";
+                cboNguoiLap.ValueMember = "MaTK";
+                cboNguoiLap.DataSource = accountOptions.ToList();
+                cboNguoiThanhToan.DisplayMember = "Display";
+                cboNguoiThanhToan.ValueMember = "MaTK";
+                cboNguoiThanhToan.DataSource = accountOptions.ToList();
+
+                if (_hoaDon == null)
+                {
+                    cboNguoiLap.SelectedValue = _currentUser.MaTK;
+                    cboNguoiThanhToan.SelectedValue = _currentUser.MaTK;
+                    if (_preselectedMaDK.HasValue)
+                    {
+                        cboDangKy.SelectedValue = _preselectedMaDK.Value;
+                    }
+                }
             }
-            catch { }
+            catch
+            {
+                // Save action will show the concrete error if the DB is unavailable.
+            }
         }
 
-        private void LoadData(HoaDon hd)
+        private void LoadData(HoaDon hoaDon)
         {
-            cboDangKy.SelectedValue = hd.MaDK;
-            if (hd.NgayThanhToan.HasValue) dtpNgayTT.Value = hd.NgayThanhToan.Value;
-            txtSoTien.Text = hd.SoTien?.ToString() ?? "";
+            cboDangKy.SelectedValue = hoaDon.MaDK;
+            if (hoaDon.NgayThanhToan.HasValue) dtpNgayTT.Value = hoaDon.NgayThanhToan.Value;
+            txtSoTien.Text = hoaDon.SoTien?.ToString() ?? "";
 
-            if (!string.IsNullOrWhiteSpace(hd.HinhThucTT) && cboHinhThuc.Items.Contains(hd.HinhThucTT))
+            if (!string.IsNullOrWhiteSpace(hoaDon.HinhThucTT) && cboHinhThuc.Items.Contains(hoaDon.HinhThucTT))
             {
-                cboHinhThuc.SelectedItem = hd.HinhThucTT;
+                cboHinhThuc.SelectedItem = hoaDon.HinhThucTT;
             }
 
-            txtGhiChu.Text = hd.GhiChu;
+            if (hoaDon.MaNguoiLap.HasValue)
+            {
+                cboNguoiLap.SelectedValue = hoaDon.MaNguoiLap.Value;
+            }
+
+            if (hoaDon.MaNguoiThanhToan.HasValue)
+            {
+                cboNguoiThanhToan.SelectedValue = hoaDon.MaNguoiThanhToan.Value;
+            }
+
+            txtGhiChu.Text = hoaDon.GhiChu;
         }
 
         private void BtnSave_Click(object? sender, EventArgs e)
@@ -83,9 +124,15 @@ namespace AppGym.Forms
                 return;
             }
 
+            if (cboNguoiLap.SelectedValue == null || cboNguoiThanhToan.SelectedValue == null)
+            {
+                MessageBox.Show("Vui lòng chọn đủ người thao tác!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (!decimal.TryParse(txtSoTien.Text, out var soTien) || soTien <= 0)
             {
-                MessageBox.Show("Số tiền phải > 0!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Số tiền phải lớn hơn 0!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -96,17 +143,19 @@ namespace AppGym.Forms
                 return;
             }
 
-            var hd = _hd ?? new HoaDon();
-            hd.MaDK = (int)cboDangKy.SelectedValue;
-            hd.NgayThanhToan = dtpNgayTT.Value;
-            hd.SoTien = soTien;
-            hd.HinhThucTT = hinhThuc;
-            hd.GhiChu = txtGhiChu.Text.Trim();
+            var hoaDon = _hoaDon ?? new HoaDon();
+            hoaDon.MaDK = (int)cboDangKy.SelectedValue;
+            hoaDon.NgayThanhToan = dtpNgayTT.Value;
+            hoaDon.SoTien = soTien;
+            hoaDon.HinhThucTT = hinhThuc;
+            hoaDon.MaNguoiLap = (int)cboNguoiLap.SelectedValue;
+            hoaDon.MaNguoiThanhToan = (int)cboNguoiThanhToan.SelectedValue;
+            hoaDon.GhiChu = txtGhiChu.Text.Trim();
 
             var dao = new HoaDonDAO();
             try
             {
-                bool ok = _hd == null ? dao.Insert(hd) : dao.Update(hd);
+                bool ok = _hoaDon == null ? dao.Insert(hoaDon) : dao.Update(hoaDon);
                 if (ok)
                 {
                     MessageBox.Show("Lưu thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);

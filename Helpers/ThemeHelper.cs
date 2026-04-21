@@ -3,33 +3,35 @@ namespace AppGym.Helpers
     public static class ThemeColors
     {
         // Primary
-        public static Color Primary = Color.FromArgb(30, 30, 60);
-        public static Color PrimaryDark = Color.FromArgb(20, 20, 45);
-        public static Color PrimaryLight = Color.FromArgb(45, 45, 80);
+        public static Color Primary = Color.FromArgb(19, 28, 46);
+        public static Color PrimaryDark = Color.FromArgb(11, 18, 33);
+        public static Color PrimaryLight = Color.FromArgb(36, 52, 82);
 
         // Accent
-        public static Color Accent = Color.FromArgb(255, 107, 53);
-        public static Color AccentHover = Color.FromArgb(255, 130, 80);
+        public static Color Accent = Color.FromArgb(232, 169, 84);
+        public static Color AccentHover = Color.FromArgb(244, 186, 109);
+        public static Color AccentSoft = Color.FromArgb(252, 243, 228);
 
         // Background
-        public static Color Background = Color.FromArgb(240, 242, 245);
+        public static Color Background = Color.FromArgb(243, 245, 249);
         public static Color CardBackground = Color.White;
+        public static Color SurfaceMuted = Color.FromArgb(232, 236, 243);
 
         // Text
-        public static Color TextPrimary = Color.FromArgb(33, 37, 41);
-        public static Color TextSecondary = Color.FromArgb(108, 117, 125);
+        public static Color TextPrimary = Color.FromArgb(29, 37, 51);
+        public static Color TextSecondary = Color.FromArgb(104, 115, 134);
         public static Color TextOnDark = Color.White;
 
         // Status
-        public static Color Success = Color.FromArgb(40, 167, 69);
-        public static Color Warning = Color.FromArgb(255, 193, 7);
-        public static Color Danger = Color.FromArgb(220, 53, 69);
-        public static Color Info = Color.FromArgb(23, 162, 184);
+        public static Color Success = Color.FromArgb(41, 148, 99);
+        public static Color Warning = Color.FromArgb(231, 160, 56);
+        public static Color Danger = Color.FromArgb(210, 84, 84);
+        public static Color Info = Color.FromArgb(56, 120, 201);
 
         // Sidebar
-        public static Color SidebarBg = Color.FromArgb(30, 30, 60);
-        public static Color SidebarHover = Color.FromArgb(45, 45, 80);
-        public static Color SidebarActive = Color.FromArgb(255, 107, 53);
+        public static Color SidebarBg = Color.FromArgb(16, 24, 40);
+        public static Color SidebarHover = Color.FromArgb(33, 47, 73);
+        public static Color SidebarActive = Color.FromArgb(232, 169, 84);
     }
 
     public static class UIHelper
@@ -39,7 +41,7 @@ namespace AppGym.Helpers
             dgv.BorderStyle = BorderStyle.None;
             dgv.BackgroundColor = ThemeColors.CardBackground;
             dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgv.GridColor = Color.FromArgb(230, 230, 230);
+            dgv.GridColor = Color.FromArgb(233, 236, 241);
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv.MultiSelect = false;
             dgv.ReadOnly = true;
@@ -69,7 +71,7 @@ namespace AppGym.Helpers
                 BackColor = ThemeColors.CardBackground,
                 ForeColor = ThemeColors.TextPrimary,
                 Font = new Font("Segoe UI", 9.5f),
-                SelectionBackColor = Color.FromArgb(232, 240, 254),
+                SelectionBackColor = Color.FromArgb(242, 231, 210),
                 SelectionForeColor = ThemeColors.TextPrimary,
                 Padding = new Padding(8, 0, 0, 0)
             };
@@ -79,7 +81,7 @@ namespace AppGym.Helpers
                 BackColor = Color.FromArgb(248, 249, 250),
                 ForeColor = ThemeColors.TextPrimary,
                 Font = new Font("Segoe UI", 9.5f),
-                SelectionBackColor = Color.FromArgb(232, 240, 254),
+                SelectionBackColor = Color.FromArgb(242, 231, 210),
                 SelectionForeColor = ThemeColors.TextPrimary,
                 Padding = new Padding(8, 0, 0, 0)
             };
@@ -98,8 +100,10 @@ namespace AppGym.Helpers
                 Cursor = Cursors.Hand
             };
             btn.FlatAppearance.BorderSize = 0;
+            btn.FlatAppearance.MouseOverBackColor = ThemeColors.AccentHover;
+            btn.FlatAppearance.MouseDownBackColor = ControlPaint.Dark(bgColor, 0.08f);
             btn.Region = System.Drawing.Region.FromHrgn(
-                CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 8, 8));
+                CreateRoundRectRgn(0, 0, btn.Width, btn.Height, 14, 14));
             return btn;
         }
 
@@ -122,6 +126,11 @@ namespace AppGym.Helpers
                 Size = new Size(width, height),
                 BackColor = ThemeColors.CardBackground,
                 Padding = new Padding(16)
+            };
+            panel.Paint += (s, e) =>
+            {
+                using var pen = new Pen(Color.FromArgb(232, 236, 242));
+                e.Graphics.DrawRectangle(pen, 0, 0, panel.Width - 1, panel.Height - 1);
             };
             return panel;
         }

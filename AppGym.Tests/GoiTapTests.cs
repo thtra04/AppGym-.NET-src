@@ -4,8 +4,8 @@ using AppGym.Models;
 namespace AppGym.Tests;
 
 /// <summary>
-/// TC_GT_01 ? TC_GT_06
-/// Ki?m tra CRUD g�i t?p v� bug t�m ki?m (#8) trong GoiTapDAO
+/// TC_GT_01 - TC_GT_06
+/// Kiem tra CRUD goi tap va tim kiem trong GoiTapDAO
 /// </summary>
 [TestFixture]
 [Category("Goi tap")]
@@ -33,15 +33,14 @@ public class GoiTapTests : TestBase
 
     private GoiTap MakeTestGoiTap(string suffix = "") => new()
     {
-        TenGoi    = $"TEST_Goi 1 Thang{suffix}",
-        ThoiHan   = 30,
-        Gia       = 500_000,
-        MoTa      = "Co ban"
+        TenGoi = $"TEST_Goi 1 Thang{suffix}",
+        ThoiHan = 30,
+        Gia = 500_000,
+        MoTa = "Co ban"
     };
 
-    // TC_GT_01 � Positive
     [Test]
-    [Description("TC_GT_01: Th�m g�i t?p h?p l? th�nh c�ng")]
+    [Description("TC_GT_01: Them goi tap hop le thanh cong")]
     public void Insert_ValidGoiTap_ReturnsTrue()
     {
         var gt = MakeTestGoiTap("_01");
@@ -53,9 +52,8 @@ public class GoiTapTests : TestBase
         Assert.That(_dao.GetAll().Any(x => x.TenGoi == gt.TenGoi), Is.True);
     }
 
-    // TC_GT_02 � Negative (validation)
     [Test]
-    [Description("TC_GT_02: TenGoi r?ng � validation t? ch?i tr??c khi g?i DAO")]
+    [Description("TC_GT_02: TenGoi rong bi validation tu choi truoc khi goi DAO")]
     public void Insert_EmptyTenGoi_ValidationFails()
     {
         bool isValid = !string.IsNullOrWhiteSpace("");
@@ -63,42 +61,39 @@ public class GoiTapTests : TestBase
         Assert.That(isValid, Is.False);
     }
 
-    // TC_GT_03 � Negative (parse fail ? null, kh�ng crash)
     [Test]
-    [Description("TC_GT_03: ThoiHan='abc', Gia='xyz' ???c parse th�nh null, insert kh�ng crash")]
+    [Description("TC_GT_03: ThoiHan abc va Gia xyz duoc parse thanh null, insert khong crash")]
     public void Insert_NonNumericThoiHanAndGia_ParsedAsNull()
     {
-        int?     thoiHan = int.TryParse("abc", out var t)     ? t : (int?)null;
-        decimal? gia     = decimal.TryParse("xyz", out var g) ? g : (decimal?)null;
+        int? thoiHan = int.TryParse("abc", out var t) ? t : (int?)null;
+        decimal? gia = decimal.TryParse("xyz", out var g) ? g : (decimal?)null;
 
         Assert.That(thoiHan, Is.Null);
         Assert.That(gia, Is.Null);
 
         var gt = MakeTestGoiTap("_03");
         gt.ThoiHan = thoiHan;
-        gt.Gia     = gia;
+        gt.Gia = gia;
         bool ok = _dao.Insert(gt);
         Assert.That(ok, Is.True);
         _insertedId = _dao.GetAll().First(x => x.TenGoi == gt.TenGoi).MaGoi;
     }
 
-    // TC_GT_04 � Negative (FK violation)
     [Test]
-    [Description("TC_GT_04: X�a g�i t?p ?ang ???c ??ng k� n�m ra SqlException")]
+    [Description("TC_GT_04: Xoa goi tap dang duoc dang ky nem ra SqlException")]
     public void Delete_GoiTapWithDangKy_ThrowsSqlException()
     {
         var allDK = new DangKyGoiDAO().GetAll();
         if (!allDK.Any())
-            Assert.Ignore("Kh�ng c� ??ng k� n�o ?? test FK.");
+            Assert.Ignore("Khong co dang ky nao de test FK.");
 
         int maGoi = allDK.First().MaGoi;
 
         Assert.Throws<Microsoft.Data.SqlClient.SqlException>(() => _dao.Delete(maGoi));
     }
 
-    // TC_GT_05 � Positive
     [Test]
-    [Description("TC_GT_05: S?a gi� g�i t?p th�nh c�ng")]
+    [Description("TC_GT_05: Sua gia goi tap thanh cong")]
     public void Update_GoiTap_UpdatesPriceCorrectly()
     {
         var gt = MakeTestGoiTap("_05");
@@ -114,16 +109,16 @@ public class GoiTapTests : TestBase
         Assert.That(updated.Gia, Is.EqualTo(1_000_000));
     }
 
-    // TC_GT_06 / TC_BUG_08 � Bug: GoiTap kh�ng c� Search() ? t�m ki?m kh�ng ho?t ??ng
     [Test]
-    [Description("TC_GT_06 / TC_BUG_08: GoiTapDAO kh�ng c� ph??ng th?c Search() ? bug x�c nh?n")]
-    public void GoiTapDAO_HasNoSearchMethod_BugConfirmed()
+    [Description("TC_GT_06: Search goi tap theo ten tra ve dung ket qua")]
+    public void Search_ByTenGoi_ReturnsMatchingResults()
     {
-        var methods = typeof(GoiTapDAO).GetMethods(
-            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-        bool hasSearch = methods.Any(m => m.Name == "Search");
+        var gt = MakeTestGoiTap("_06");
+        _dao.Insert(gt);
+        _insertedId = _dao.GetAll().First(x => x.TenGoi == gt.TenGoi).MaGoi;
 
-        Assert.That(hasSearch, Is.False,
-            "[BUG#8] GoiTapDAO thi?u ph??ng th?c Search() n�n t�m ki?m tr�n UI kh�ng ho?t ??ng");
+        var result = _dao.Search("_06");
+
+        Assert.That(result.Any(x => x.MaGoi == _insertedId), Is.True);
     }
 }

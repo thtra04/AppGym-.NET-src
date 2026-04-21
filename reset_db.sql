@@ -1,4 +1,23 @@
-﻿-- =====================================================
+﻿/* =========================================================================
+   AppGym - Reset database
+   CẢNH BÁO: Script này sẽ XÓA toàn bộ dữ liệu trong GymManagementDB!
+   Dùng khi bạn muốn tạo lại schema từ đầu.
+     sqlcmd -S (local)\SQLEXPRESS -E -i reset_db.sql
+   ========================================================================= */
+
+IF DB_ID(N'GymManagementDB') IS NOT NULL
+BEGIN
+    ALTER DATABASE GymManagementDB SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE GymManagementDB;
+END
+GO
+
+CREATE DATABASE GymManagementDB;
+GO
+
+PRINT N'Đã DROP và CREATE lại GymManagementDB. Hãy chạy setup_db.sql để tạo bảng và dữ liệu mẫu.';
+GO
+-- =====================================================
 -- RESET: Xoa database cu (neu co) va tao lai tu dau
 -- =====================================================
 
@@ -33,7 +52,7 @@ CREATE TABLE TaiKhoan (
     MatKhauHash VARBINARY(MAX),
     Salt UNIQUEIDENTIFIER DEFAULT NEWID(),
     HoTen NVARCHAR(100),
-    VaiTro NVARCHAR(50) DEFAULT N'NhanVien' CHECK (VaiTro IN (N'Admin', N'NhanVien')),
+    VaiTro NVARCHAR(50) DEFAULT N'NhanVien' CHECK (VaiTro IN (N'Admin', N'QuanLy', N'NhanVien')),
     TaoLuc DATETIME DEFAULT GETDATE()
 );
 GO

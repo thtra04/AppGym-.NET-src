@@ -1,89 +1,163 @@
 using AppGym.DataAccess;
-using AppGym.Helpers;
 using AppGym.Models;
 
 namespace AppGym.Forms
 {
     public partial class FormDangKyGoiDetail : Form
     {
-        private DangKyGoi? _dk;
-        private List<GoiTap> _goiTapList = new();
+        private readonly DangKyGoi? _dangKy;
+        private readonly TaiKhoan _currentUser;
+        private readonly List<GoiTap> _goiTapList = new();
+        // True when the end-date has been auto-suggested and the user hasn't manually overridden it yet.
+        private bool _hetHanIsAutoSuggested = true;
+        private bool _suppressHetHanChanged;
 
-        public FormDangKyGoiDetail(DangKyGoi? dk)
+        public FormDangKyGoiDetail(DangKyGoi? dangKy, TaiKhoan currentUser)
         {
-            _dk = dk;
+            _dangKy = dangKy;
+            _currentUser = currentUser;
             InitializeComponent();
-            Text = _dk == null ? "Thêm Đăng ký gói" : "Sửa Đăng ký gói";
+            Text = _dangKy == null ? "Thêm đăng ký gói" : "Sửa đăng ký gói";
             LoadCombos();
-            if (dk != null)
+            if (_dangKy != null)
             {
-                LoadData(dk);
+                LoadData(_dangKy);
+                // Existing record: respect stored end date as user-set value.
+                _hetHanIsAutoSuggested = false;
             }
 
-            cboGoiTap.SelectedIndexChanged += (s, e) => UpdateNgayHetHan();
-            dtpBatDau.ValueChanged += (s, e) => UpdateNgayHetHan();
+            cboGoiTap.SelectedIndexChanged += (_, _) =>
+            {
+                SuggestNgayHetHan();
+                UpdateThanhToanInfo();
+            };
+            // Re-suggest only when end-date hasn't been touched by the user yet.
+            dtpBatDau.ValueChanged += (_, _) => SuggestNgayHetHan();
+            dtpHetHan.ValueChanged += (_, _) =>
+            {
+                if (_suppressHetHanChanged) return;
+                _hetHanIsAutoSuggested = false;
+            };
+            UpdateThanhToanInfo();
         }
 
         private void LoadCombos()
         {
             try
             {
-                var hvList = new HocVienDAO().GetAll();
+                var hocVienList = new HocVienDAO().GetAll();
                 cboHocVien.DisplayMember = "HoTen";
                 cboHocVien.ValueMember = "MaHV";
-                cboHocVien.DataSource = hvList;
+                cboHocVien.DataSource = hocVienList;
 
-                _goiTapList = new GoiTapDAO().GetAll();
+                _goiTapList.Clear();
+                _goiTapList.AddRange(new GoiTapDAO().GetAll());
                 cboGoiTap.DisplayMember = "TenGoi";
                 cboGoiTap.ValueMember = "MaGoi";
                 cboGoiTap.DataSource = _goiTapList;
+
+                var accountOptions = new TaiKhoanDAO().GetAll()
+                    .Select(x => new
+                    {
+                        x.MaTK,
+                        Display = $"{x.HoTen} ({x.TenDangNhap}){(x.HoatDong ? "" : " - tạm khóa")}"
+                    })
+                    .ToList();
+                cboNguoiLap.DisplayMember = "Display";
+                cboNguoiLap.ValueMember = "MaTK";
+                cboNguoiLap.DataSource = accountOptions;
+                cboNguoiLap.SelectedValue = _dangKy?.MaNguoiLap ?? _currentUser.MaTK;
             }
-            catch { }
+            catch
+            {
+                // Let the save action surface real DB errors when needed.
+            }
         }
 
-        private void LoadData(DangKyGoi dk)
+        private void LoadData(DangKyGoi dangKy)
         {
-            cboHocVien.SelectedValue = dk.MaHV;
-            cboGoiTap.SelectedValue = dk.MaGoi;
-            if (dk.NgayBatDau.HasValue) dtpBatDau.Value = dk.NgayBatDau.Value;
-            if (dk.NgayHetHan.HasValue) dtpHetHan.Value = dk.NgayHetHan.Value;
-            txtGhiChu.Text = dk.GhiChu;
+            cboHocVien.SelectedValue = dangKy.MaHV;
+            cboGoiTap.SelectedValue = dangKy.MaGoi;
+            if (dangKy.MaNguoiLap.HasValue)
+            {
+                cboNguoiLap.SelectedValue = dangKy.MaNguoiLap.Value;
+            }
+
+            if (dangKy.NgayBatDau.HasValue) dtpBatDau.Value = dangKy.NgayBatDau.Value;
+            if (dangKy.NgayHetHan.HasValue) dtpHetHan.Value = dangKy.NgayHetHan.Value;
+            txtGhiChu.Text = dangKy.GhiChu;
+            UpdateThanhToanInfo();
         }
 
-        private void UpdateNgayHetHan()
+        private void SuggestNgayHetHan()
         {
+            // Only auto-fill end-date when the user hasn't taken control of it yet.
+            if (!_hetHanIsAutoSuggested) return;
             if (cboGoiTap.SelectedItem is GoiTap selectedGoi && selectedGoi.ThoiHan.HasValue)
             {
+                _suppressHetHanChanged = true;
                 dtpHetHan.Value = dtpBatDau.Value.Date.AddDays(selectedGoi.ThoiHan.Value);
+                _suppressHetHanChanged = false;
             }
         }
+
+        private void UpdateThanhToanInfo()
+        {
+            var giaGoi = 0m;
+            if (cboGoiTap.SelectedItem is GoiTap selectedGoi)
+            {
+                giaGoi = selectedGoi.Gia ?? 0;
+            }
+
+            var daThanhToan = _dangKy?.DaThanhToan ?? 0m;
+            var conThieu = Math.Max(giaGoi - daThanhToan, 0);
+            var trangThai = daThanhToan <= 0
+                ? "Chưa thanh toán"
+                : conThieu > 0
+                    ? $"Đã thanh toán {FormatCurrency(daThanhToan)}"
+                    : "Đã thanh toán đủ";
+
+            lblGiaGoiValue.Text = FormatCurrency(giaGoi);
+            lblDaThanhToanValue.Text = FormatCurrency(daThanhToan);
+            lblTrangThaiValue.Text = conThieu > 0 && daThanhToan > 0
+                ? $"{trangThai} - còn thiếu {FormatCurrency(conThieu)}"
+                : trangThai;
+            lblTrangThaiValue.ForeColor = conThieu <= 0 && daThanhToan > 0
+                ? Color.FromArgb(39, 174, 96)
+                : daThanhToan > 0
+                    ? Color.FromArgb(243, 156, 18)
+                    : Color.FromArgb(231, 76, 60);
+        }
+
+        private static string FormatCurrency(decimal value) => value.ToString("#,##0") + " VNĐ";
 
         private void BtnSave_Click(object? sender, EventArgs e)
         {
-            if (cboHocVien.SelectedValue == null || cboGoiTap.SelectedValue == null)
+            if (cboHocVien.SelectedValue == null || cboGoiTap.SelectedValue == null || cboNguoiLap.SelectedValue == null)
             {
                 MessageBox.Show("Vui lòng chọn đầy đủ thông tin!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var dk = _dk ?? new DangKyGoi();
-            dk.MaHV = (int)cboHocVien.SelectedValue;
-            dk.MaGoi = (int)cboGoiTap.SelectedValue;
-            dk.NgayBatDau = dtpBatDau.Value.Date;
-            dk.NgayHetHan = dtpHetHan.Value.Date;
+            var dangKy = _dangKy ?? new DangKyGoi();
+            dangKy.MaHV = (int)cboHocVien.SelectedValue;
+            dangKy.MaGoi = (int)cboGoiTap.SelectedValue;
+            dangKy.MaNguoiLap = (int)cboNguoiLap.SelectedValue;
+            dangKy.NgayBatDau = dtpBatDau.Value.Date;
+            dangKy.NgayHetHan = dtpHetHan.Value.Date;
 
-            if (dk.NgayHetHan < dk.NgayBatDau)
+            if (dangKy.NgayHetHan < dangKy.NgayBatDau)
             {
                 MessageBox.Show("Ngày hết hạn phải sau ngày bắt đầu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            dk.GhiChu = txtGhiChu.Text.Trim();
+            dangKy.GhiChu = txtGhiChu.Text.Trim();
 
             var dao = new DangKyGoiDAO();
             try
             {
-                bool ok = _dk == null ? dao.Insert(dk) : dao.Update(dk);
+                bool ok = _dangKy == null ? dao.Insert(dangKy) : dao.Update(dangKy);
                 if (ok)
                 {
                     MessageBox.Show("Lưu thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);

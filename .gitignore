@@ -18,3 +18,8 @@ TestResults/
 
 ## Build output
 publish/
+
+## Installer build output (large binaries)
+installer_output/
+*.exe
+

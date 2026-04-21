@@ -8,9 +8,13 @@ namespace AppGym.Models
         public decimal? SoTien { get; set; }
         public string HinhThucTT { get; set; } = "";
         public string GhiChu { get; set; } = "";
+        public int? MaNguoiLap { get; set; }
+        public int? MaNguoiThanhToan { get; set; }
 
         // Display fields
         public string TenHV { get; set; } = "";
         public string TenGoi { get; set; } = "";
+        public string TenNguoiLap { get; set; } = "";
+        public string TenNguoiThanhToan { get; set; } = "";
     }
 }

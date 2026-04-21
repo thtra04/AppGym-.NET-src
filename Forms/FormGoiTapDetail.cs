@@ -6,14 +6,25 @@ namespace AppGym.Forms
 {
     public partial class FormGoiTapDetail : Form
     {
-        private GoiTap? _goiTap;
+        private readonly GoiTap? _goiTap;
 
         public FormGoiTapDetail(GoiTap? gt)
         {
             _goiTap = gt;
             InitializeComponent();
-            Text = _goiTap == null ? "Thêm Gói tập" : "Sửa Gói tập";
+            ConfigureFormUi();
+            Text = _goiTap == null ? "Thêm gói tập" : "Sửa gói tập";
             if (gt != null) LoadData(gt);
+        }
+
+        private void ConfigureFormUi()
+        {
+            AcceptButton = btnSave;
+            CancelButton = btnCancel;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnCancel.FlatAppearance.BorderSize = 0;
+            UIHelper.RoundControl(btnSave, 16);
+            UIHelper.RoundControl(btnCancel, 16);
         }
 
         private void LoadData(GoiTap gt)

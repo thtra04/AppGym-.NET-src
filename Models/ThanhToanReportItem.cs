@@ -13,6 +13,8 @@ namespace AppGym.Models
         public DateTime? NgayThanhToan { get; set; }
         public decimal? SoTien { get; set; }
         public string HinhThucTT { get; set; } = "";
+        public string TenNguoiLap { get; set; } = "";
+        public string TenNguoiThanhToan { get; set; } = "";
         public string GhiChu { get; set; } = "";
     }
 }

@@ -26,6 +26,35 @@ namespace AppGym.DataAccess
             return list;
         }
 
+        public List<GoiTap> Search(string keyword)
+        {
+            var list = new List<GoiTap>();
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+            using var cmd = new SqlCommand(
+                @"SELECT * FROM GoiTap
+                  WHERE CAST(MaGoi AS NVARCHAR(20)) LIKE @kw
+                     OR TenGoi LIKE @kw
+                     OR ISNULL(MoTa, N'') LIKE @kw
+                     OR CAST(ISNULL(ThoiHan, 0) AS NVARCHAR(20)) LIKE @kw
+                     OR CONVERT(NVARCHAR(50), ISNULL(Gia, 0)) LIKE @kw
+                  ORDER BY MaGoi DESC", conn);
+            cmd.Parameters.AddWithValue("@kw", $"%{keyword}%");
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new GoiTap
+                {
+                    MaGoi = reader.GetInt32(reader.GetOrdinal("MaGoi")),
+                    TenGoi = reader.IsDBNull(reader.GetOrdinal("TenGoi")) ? "" : reader.GetString(reader.GetOrdinal("TenGoi")),
+                    ThoiHan = reader.IsDBNull(reader.GetOrdinal("ThoiHan")) ? null : reader.GetInt32(reader.GetOrdinal("ThoiHan")),
+                    Gia = reader.IsDBNull(reader.GetOrdinal("Gia")) ? null : reader.GetDecimal(reader.GetOrdinal("Gia")),
+                    MoTa = reader.IsDBNull(reader.GetOrdinal("MoTa")) ? "" : reader.GetString(reader.GetOrdinal("MoTa"))
+                });
+            }
+            return list;
+        }
+
         public bool Insert(GoiTap gt)
         {
             using var conn = DatabaseHelper.GetConnection();

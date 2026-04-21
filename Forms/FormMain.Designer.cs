@@ -7,6 +7,7 @@
         private Panel panelSidebar;
         private Panel panelLogo;
         private Label lblLogo;
+        private Label lblLogoSub;
         private Button btnLogout;
         private Panel panelTopBar;
         private Label lblPageTitle;
@@ -23,119 +24,161 @@
 
         private void InitializeComponent()
         {
-            this.components     = new System.ComponentModel.Container();
-            this.panelSidebar   = new Panel();
-            this.panelLogo      = new Panel();
-            this.lblLogo        = new Label();
-            this.btnLogout      = new Button();
-            this.panelTopBar    = new Panel();
-            this.lblPageTitle   = new Label();
-            this.lblUserName    = new Label();
-            this.panelSeparator = new Panel();
-            this.panelContent   = new Panel();
-            this.userMenu       = new ContextMenuStrip(this.components);
-
-            this.panelSidebar.SuspendLayout();
-            this.panelLogo.SuspendLayout();
-            this.panelTopBar.SuspendLayout();
-            this.SuspendLayout();
-
+            components = new System.ComponentModel.Container();
+            panelSidebar = new Panel();
+            btnLogout = new Button();
+            panelLogo = new Panel();
+            lblLogoSub = new Label();
+            lblLogo = new Label();
+            panelTopBar = new Panel();
+            lblUserName = new Label();
+            lblPageTitle = new Label();
+            panelSeparator = new Panel();
+            panelContent = new Panel();
+            userMenu = new ContextMenuStrip(components);
+            panelSidebar.SuspendLayout();
+            panelLogo.SuspendLayout();
+            panelTopBar.SuspendLayout();
+            SuspendLayout();
+            // 
             // panelSidebar
-            this.panelSidebar.BackColor = Color.FromArgb(30, 39, 73);
-            this.panelSidebar.Controls.Add(this.btnLogout);
-            this.panelSidebar.Controls.Add(this.panelLogo);
-            this.panelSidebar.Dock = DockStyle.Left;
-            this.panelSidebar.Name = "panelSidebar";
-            this.panelSidebar.Width = 240;
-
-            // panelLogo
-            this.panelLogo.BackColor = Color.FromArgb(20, 28, 58);
-            this.panelLogo.Controls.Add(this.lblLogo);
-            this.panelLogo.Dock = DockStyle.Top;
-            this.panelLogo.Height = 80;
-            this.panelLogo.Name = "panelLogo";
-
-            // lblLogo
-            this.lblLogo.AutoSize = false;
-            this.lblLogo.Dock = DockStyle.Fill;
-            this.lblLogo.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            this.lblLogo.ForeColor = Color.FromArgb(230, 126, 34);
-            this.lblLogo.Name = "lblLogo";
-            this.lblLogo.Text = "GYM MANAGER";
-            this.lblLogo.TextAlign = ContentAlignment.MiddleCenter;
-
+            // 
+            panelSidebar.BackColor = Color.FromArgb(16, 24, 40);
+            panelSidebar.Controls.Add(btnLogout);
+            panelSidebar.Controls.Add(panelLogo);
+            panelSidebar.Dock = DockStyle.Left;
+            panelSidebar.Location = new Point(0, 0);
+            panelSidebar.Name = "panelSidebar";
+            panelSidebar.Size = new Size(270, 780);
+            panelSidebar.TabIndex = 0;
+            // 
             // btnLogout
-            this.btnLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            this.btnLogout.BackColor = Color.FromArgb(30, 39, 73);
-            this.btnLogout.FlatStyle = FlatStyle.Flat;
-            this.btnLogout.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            this.btnLogout.ForeColor = Color.FromArgb(200, 200, 220);
-            this.btnLogout.Location = new Point(0, 560);
-            this.btnLogout.Name = "btnLogout";
-            this.btnLogout.Padding = new Padding(15, 0, 0, 0);
-            this.btnLogout.Size = new Size(240, 48);
-            this.btnLogout.Text = "  \u2716   \u0110\u0103ng xu\u1EA5t";
-            this.btnLogout.TextAlign = ContentAlignment.MiddleLeft;
-            this.btnLogout.Click += new EventHandler(this.BtnLogout_Click);
-
+            // 
+            btnLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnLogout.BackColor = Color.FromArgb(22, 32, 52);
+            btnLogout.FlatStyle = FlatStyle.Flat;
+            btnLogout.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnLogout.ForeColor = Color.FromArgb(233, 235, 240);
+            btnLogout.Location = new Point(20, 704);
+            btnLogout.Name = "btnLogout";
+            btnLogout.Padding = new Padding(16, 0, 0, 0);
+            btnLogout.Size = new Size(228, 48);
+            btnLogout.TabIndex = 1;
+            btnLogout.Text = "  \u2726   \u0110\u0103ng xu\u1EA5t";
+            btnLogout.TextAlign = ContentAlignment.MiddleLeft;
+            btnLogout.UseVisualStyleBackColor = false;
+            btnLogout.Click += BtnLogout_Click;
+            // 
+            // panelLogo
+            // 
+            panelLogo.BackColor = Color.FromArgb(11, 18, 33);
+            panelLogo.Controls.Add(lblLogoSub);
+            panelLogo.Controls.Add(lblLogo);
+            panelLogo.Dock = DockStyle.Top;
+            panelLogo.Location = new Point(0, 0);
+            panelLogo.Name = "panelLogo";
+            panelLogo.Size = new Size(270, 126);
+            panelLogo.TabIndex = 0;
+            // 
+            // lblLogoSub
+            // 
+            lblLogoSub.AutoSize = true;
+            lblLogoSub.Font = new Font("Segoe UI", 9.5F);
+            lblLogoSub.ForeColor = Color.FromArgb(183, 191, 206);
+            lblLogoSub.Location = new Point(30, 78);
+            lblLogoSub.Name = "lblLogoSub";
+            lblLogoSub.Size = new Size(144, 21);
+            lblLogoSub.TabIndex = 1;
+            lblLogoSub.Text = "Studio qu\u1EA3n l\u00FD gym";
+            // 
+            // lblLogo
+            // 
+            lblLogo.AutoSize = true;
+            lblLogo.Font = new Font("Segoe UI Semibold", 19.2F, FontStyle.Bold);
+            lblLogo.ForeColor = Color.FromArgb(232, 169, 84);
+            lblLogo.Location = new Point(28, 30);
+            lblLogo.Name = "lblLogo";
+            lblLogo.Size = new Size(177, 45);
+            lblLogo.TabIndex = 0;
+            lblLogo.Text = "Gym Flow";
+            // 
             // panelTopBar
-            this.panelTopBar.BackColor = Color.White;
-            this.panelTopBar.Controls.Add(this.lblUserName);
-            this.panelTopBar.Controls.Add(this.lblPageTitle);
-            this.panelTopBar.Dock = DockStyle.Top;
-            this.panelTopBar.Height = 60;
-            this.panelTopBar.Name = "panelTopBar";
-            this.panelTopBar.Padding = new Padding(20, 0, 20, 0);
-
-            // lblPageTitle
-            this.lblPageTitle.AutoSize = true;
-            this.lblPageTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-            this.lblPageTitle.ForeColor = Color.FromArgb(44, 62, 80);
-            this.lblPageTitle.Location = new Point(20, 16);
-            this.lblPageTitle.Name = "lblPageTitle";
-            this.lblPageTitle.Text = "T\u1ED5ng quan";
-
+            // 
+            panelTopBar.BackColor = Color.FromArgb(250, 250, 252);
+            panelTopBar.Controls.Add(lblUserName);
+            panelTopBar.Controls.Add(lblPageTitle);
+            panelTopBar.Dock = DockStyle.Top;
+            panelTopBar.Location = new Point(270, 0);
+            panelTopBar.Name = "panelTopBar";
+            panelTopBar.Padding = new Padding(28, 0, 28, 0);
+            panelTopBar.Size = new Size(1080, 78);
+            panelTopBar.TabIndex = 1;
+            // 
             // lblUserName
-            this.lblUserName.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            this.lblUserName.AutoSize = true;
-            this.lblUserName.Font = new Font("Segoe UI", 10F);
-            this.lblUserName.ForeColor = Color.FromArgb(80, 80, 80);
-            this.lblUserName.Location = new Point(900, 20);
-            this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Text = "";
-
+            // 
+            lblUserName.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblUserName.AutoSize = true;
+            lblUserName.BackColor = Color.FromArgb(246, 238, 225);
+            lblUserName.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblUserName.ForeColor = Color.FromArgb(64, 75, 92);
+            lblUserName.Location = new Point(842, 26);
+            lblUserName.Name = "lblUserName";
+            lblUserName.Padding = new Padding(14, 8, 14, 8);
+            lblUserName.Size = new Size(28, 39);
+            lblUserName.TabIndex = 1;
+            lblUserName.Text = "";
+            // 
+            // lblPageTitle
+            // 
+            lblPageTitle.AutoSize = true;
+            lblPageTitle.Font = new Font("Segoe UI Semibold", 20F, FontStyle.Bold);
+            lblPageTitle.ForeColor = Color.FromArgb(29, 37, 51);
+            lblPageTitle.Location = new Point(28, 18);
+            lblPageTitle.Name = "lblPageTitle";
+            lblPageTitle.Size = new Size(164, 46);
+            lblPageTitle.TabIndex = 0;
+            lblPageTitle.Text = "T\u1ED5ng quan";
+            // 
             // panelSeparator
-            this.panelSeparator.BackColor = Color.FromArgb(220, 220, 220);
-            this.panelSeparator.Dock = DockStyle.Top;
-            this.panelSeparator.Height = 1;
-            this.panelSeparator.Name = "panelSeparator";
-
+            // 
+            panelSeparator.BackColor = Color.FromArgb(230, 233, 239);
+            panelSeparator.Dock = DockStyle.Top;
+            panelSeparator.Location = new Point(270, 78);
+            panelSeparator.Name = "panelSeparator";
+            panelSeparator.Size = new Size(1080, 1);
+            panelSeparator.TabIndex = 2;
+            // 
             // panelContent
-            this.panelContent.AutoScroll = true;
-            this.panelContent.BackColor = Color.FromArgb(245, 246, 250);
-            this.panelContent.Dock = DockStyle.Fill;
-            this.panelContent.Name = "panelContent";
-            this.panelContent.Padding = new Padding(20);
-
+            // 
+            panelContent.AutoScroll = true;
+            panelContent.BackColor = Color.FromArgb(243, 245, 249);
+            panelContent.Dock = DockStyle.Fill;
+            panelContent.Location = new Point(270, 79);
+            panelContent.Name = "panelContent";
+            panelContent.Padding = new Padding(22);
+            panelContent.Size = new Size(1080, 701);
+            panelContent.TabIndex = 3;
+            // 
             // FormMain
-            this.AutoScaleDimensions = new SizeF(7F, 15F);
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.BackColor = Color.FromArgb(245, 246, 250);
-            this.ClientSize = new Size(1300, 750);
-            this.Controls.Add(this.panelContent);
-            this.Controls.Add(this.panelSeparator);
-            this.Controls.Add(this.panelTopBar);
-            this.Controls.Add(this.panelSidebar);
-            this.MinimumSize = new Size(1100, 650);
-            this.Name = "FormMain";
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = "GYM MANAGER - Qu\u1EA3n l\u00FD ph\u00F2ng t\u1EADp";
-
-            this.panelSidebar.ResumeLayout(false);
-            this.panelLogo.ResumeLayout(false);
-            this.panelTopBar.ResumeLayout(false);
-            this.panelTopBar.PerformLayout();
-            this.ResumeLayout(false);
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(243, 245, 249);
+            ClientSize = new Size(1350, 780);
+            Controls.Add(panelContent);
+            Controls.Add(panelSeparator);
+            Controls.Add(panelTopBar);
+            Controls.Add(panelSidebar);
+            MinimumSize = new Size(1180, 700);
+            Name = "FormMain";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "GYM MANAGER - Qu\u1EA3n l\u00FD ph\u00F2ng t\u1EADp";
+            panelSidebar.ResumeLayout(false);
+            panelLogo.ResumeLayout(false);
+            panelLogo.PerformLayout();
+            panelTopBar.ResumeLayout(false);
+            panelTopBar.PerformLayout();
+            ResumeLayout(false);
         }
     }
 }
