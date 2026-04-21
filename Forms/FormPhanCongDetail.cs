@@ -43,7 +43,7 @@ namespace AppGym.Forms
                 Text = "Chỉ hiển thị đăng ký chưa có PT",
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9.5F),
-                Location = new Point(180, 104),
+                Location = new Point(180, 112),
                 Checked = (_pc == null || _pc.MaPC == 0)
             };
             _chkOnlyUnassigned.CheckedChanged += (_, _) => RefreshDangKyCombo();
@@ -55,7 +55,7 @@ namespace AppGym.Forms
                 Text = "Chỉ hiện những đăng ký chưa được gán PT nào (mỗi đăng ký tối đa 1 PT).",
                 AutoSize = false,
                 Size = new Size(310, 18),
-                Location = new Point(180, 126),
+                Location = new Point(180, 134),
                 Font = new Font("Segoe UI", 8.5F, FontStyle.Italic),
                 ForeColor = Color.FromArgb(120, 130, 148)
             };
