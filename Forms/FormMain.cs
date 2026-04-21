@@ -192,7 +192,7 @@ namespace AppGym.Forms
             using var dlg = new Form
             {
                 Text = "Đổi mật khẩu",
-                Size = new Size(520, 360),
+                ClientSize = new Size(520, 420),
                 StartPosition = FormStartPosition.CenterParent,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
@@ -200,7 +200,7 @@ namespace AppGym.Forms
                 BackColor = ThemeColors.Background
             };
 
-            var card = UIHelper.CreateCard(468, 292);
+            var card = UIHelper.CreateCard(484, 384);
             card.Location = new Point(18, 18);
             UIHelper.RoundControl(card, 24);
             dlg.Controls.Add(card);
@@ -219,18 +219,22 @@ namespace AppGym.Forms
                 Font = new Font("Segoe UI", 9.5F),
                 ForeColor = ThemeColors.TextSecondary,
                 AutoSize = true,
-                Location = new Point(22, 48)
+                Location = new Point(22, 54)
             });
 
-            var lblOld = new Label { Text = "Mật khẩu cũ", Location = new Point(22, 82), AutoSize = true, Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = ThemeColors.TextPrimary };
-            var txtOld = new TextBox { Location = new Point(22, 106), Size = new Size(424, 32), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
-            var lblNew = new Label { Text = "Mật khẩu mới", Location = new Point(22, 146), AutoSize = true, Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = ThemeColors.TextPrimary };
-            var txtNew = new TextBox { Location = new Point(22, 170), Size = new Size(424, 32), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
-            var lblConfirm = new Label { Text = "Xác nhận mật khẩu", Location = new Point(22, 210), AutoSize = true, Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = ThemeColors.TextPrimary };
-            var txtConfirm = new TextBox { Location = new Point(22, 234), Size = new Size(424, 32), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
+            var lblOld = new Label { Text = "Mật khẩu cũ", Location = new Point(22, 90), AutoSize = true, Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = ThemeColors.TextPrimary };
+            var txtOld = new TextBox { Location = new Point(22, 114), Size = new Size(440, 32), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
+            var lblNew = new Label { Text = "Mật khẩu mới", Location = new Point(22, 156), AutoSize = true, Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = ThemeColors.TextPrimary };
+            var txtNew = new TextBox { Location = new Point(22, 180), Size = new Size(440, 32), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
+            var lblConfirm = new Label { Text = "Xác nhận mật khẩu", Location = new Point(22, 222), AutoSize = true, Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = ThemeColors.TextPrimary };
+            var txtConfirm = new TextBox { Location = new Point(22, 246), Size = new Size(440, 32), Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
 
-            var btnSave = UIHelper.CreateButton("Lưu thay đổi", ThemeColors.Success, Color.White, 140, 38);
-            btnSave.Location = new Point(306, 276);
+            var btnCancel = UIHelper.CreateButton("Hủy", ThemeColors.Danger, Color.White, 110, 40);
+            btnCancel.Location = new Point(200, 320);
+            btnCancel.Click += (_, _) => dlg.Close();
+
+            var btnSave = UIHelper.CreateButton("Lưu thay đổi", ThemeColors.Success, Color.White, 150, 40);
+            btnSave.Location = new Point(320, 320);
 
             btnSave.Click += (s, e) =>
             {
@@ -260,8 +264,7 @@ namespace AppGym.Forms
                 catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
             };
 
-            card.Controls.AddRange(new Control[] { lblOld, txtOld, lblNew, txtNew, lblConfirm, txtConfirm });
-            dlg.Controls.Add(btnSave);
+            card.Controls.AddRange(new Control[] { lblOld, txtOld, lblNew, txtNew, lblConfirm, txtConfirm, btnCancel, btnSave });
             dlg.ShowDialog();
         }
 
