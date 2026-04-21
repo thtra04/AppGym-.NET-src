@@ -1,20 +1,30 @@
-## .NET / C#
+# Build directories
 bin/
 obj/
-*.user
-*.suo
-*.vs/
 .vs/
+
+# IDE
+.vscode/
+.idea/
+
+# User-specific files
+*.suo
+
+# Build logs
 *.log
 
-## NuGet
+# Executables
+*.exe
+*.dll
+
+# NuGet
 packages/
 *.nupkg
 project.lock.json
 
-## Test results
+# Test results
 TestResults/
 *.trx
 
-## Build output
+# Build output
 publish/
