@@ -96,7 +96,7 @@ namespace AppGym.Forms
                 BackColor = panelSidebar.BackColor,
                 AutoScroll = true
             };
-            panelMenu.Height = Math.Max(btnLogout.Top - panelMenu.Top - 12, 200);
+            panelMenu.Height = Math.Max(panelSidebar.Height - panelMenu.Top - 12, 200);
             panelSidebar.Controls.Add(panelMenu);
             panelMenu.BringToFront();
 

@@ -67,6 +67,7 @@
             btnLogout.Text = "  \u2726   \u0110\u0103ng xu\u1EA5t";
             btnLogout.TextAlign = ContentAlignment.MiddleLeft;
             btnLogout.UseVisualStyleBackColor = false;
+            btnLogout.Visible = false;
             btnLogout.Click += BtnLogout_Click;
             // 
             // panelLogo
