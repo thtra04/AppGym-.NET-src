@@ -169,9 +169,10 @@
             Controls.Add(panelSeparator);
             Controls.Add(panelTopBar);
             Controls.Add(panelSidebar);
-            MinimumSize = new Size(1180, 700);
+            MinimumSize = new Size(1024, 640);
             Name = "FormMain";
             StartPosition = FormStartPosition.CenterScreen;
+            WindowState = FormWindowState.Maximized;
             Text = "GYM MANAGER - Qu\u1EA3n l\u00FD ph\u00F2ng t\u1EADp";
             panelSidebar.ResumeLayout(false);
             panelLogo.ResumeLayout(false);

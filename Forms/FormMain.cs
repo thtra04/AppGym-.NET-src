@@ -84,7 +84,23 @@ namespace AppGym.Forms
                 ("Phân quyền",       "\u2756", ShowPhanQuyen,       () => _perm.CanAssignPermissions),
             };
 
-            int yPos = panelLogo.Bottom + 28;
+            // Container that fills the space between the logo and the bottom Logout button,
+            // and scrolls if the screen is too short to show all menu items.
+            var panelMenu = new Panel
+            {
+                Name = "panelMenuItems",
+                Left = 0,
+                Top = panelLogo.Bottom + 16,
+                Width = panelSidebar.Width,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                BackColor = panelSidebar.BackColor,
+                AutoScroll = true
+            };
+            panelMenu.Height = Math.Max(btnLogout.Top - panelMenu.Top - 12, 200);
+            panelSidebar.Controls.Add(panelMenu);
+            panelMenu.BringToFront();
+
+            int yPos = 12;
             foreach (var item in allMenuItems)
             {
                 if (!item.visible()) continue;
@@ -108,7 +124,7 @@ namespace AppGym.Forms
                 UIHelper.RoundControl(btn, 16);
                 btn.Resize += (s, e) => UIHelper.RoundControl(btn, 16);
                 btn.Click += MenuButton_Click;
-                panelSidebar.Controls.Add(btn);
+                panelMenu.Controls.Add(btn);
                 yPos += 54;
             }
         }
@@ -124,7 +140,9 @@ namespace AppGym.Forms
 
         private void ShowFirstAvailablePage()
         {
-            foreach (Control c in panelSidebar.Controls)
+            var menuPanel = panelSidebar.Controls.OfType<Panel>().FirstOrDefault(p => p.Name == "panelMenuItems");
+            var host = (Control?)menuPanel ?? panelSidebar;
+            foreach (Control c in host.Controls)
             {
                 if (c is Button btn && btn.Tag is Action action)
                 {
