@@ -178,12 +178,17 @@ namespace AppGym.Forms
                 bool viewOnly = Permissions.ViewOnlyModules.Contains(code);
                 for (int i = 0; i < 4; i++)
                 {
+                    // For view-only modules (e.g. Tổng quan/Dashboard), do not render Add/Edit/Delete cells at all.
+                    if (viewOnly && i > 0)
+                    {
+                        cbs[i] = new CheckBox { Visible = false, Enabled = false };
+                        continue;
+                    }
                     cbs[i] = new CheckBox
                     {
                         Location = new Point(xs[i] + 8, top + 2),
                         AutoSize = true,
-                        Text = "",
-                        Enabled = !(viewOnly && i > 0)
+                        Text = ""
                     };
                     int idx = i;
                     // When ticking add/edit/delete, ensure view is also ticked.
@@ -196,45 +201,6 @@ namespace AppGym.Forms
                 _checkboxes[code] = cbs;
                 top += rowH;
             }
-
-            // Section: TaiKhoan permission row (only meaningful for QuanLy/NhanVien display; QuanLy is implicit)
-            top += 8;
-            panelMatrix.Controls.Add(new Label
-            {
-                Text = "Quyền đặc biệt",
-                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(52, 73, 94),
-                AutoSize = true,
-                Location = new Point(colXLabel, top)
-            });
-            top += 28;
-            var lblTk = new Label
-            {
-                Text = "Quản lý tài khoản",
-                Font = new Font("Segoe UI", 10F),
-                AutoSize = true,
-                Location = new Point(colXLabel, top + 4)
-            };
-            panelMatrix.Controls.Add(lblTk);
-
-            var tkCbs = new CheckBox[4];
-            int[] tkXs = { colXView, colXAdd, colXEdit, colXDelete };
-            for (int i = 0; i < 4; i++)
-            {
-                tkCbs[i] = new CheckBox
-                {
-                    Location = new Point(tkXs[i] + 8, top + 2),
-                    AutoSize = true,
-                    Text = ""
-                };
-                int idx = i;
-                tkCbs[i].CheckedChanged += (_, _) =>
-                {
-                    if (idx > 0 && tkCbs[idx].Checked) tkCbs[0].Checked = true;
-                };
-                panelMatrix.Controls.Add(tkCbs[i]);
-            }
-            _checkboxes[Permissions.TaiKhoan] = tkCbs;
         }
 
         private void LoadAccounts()

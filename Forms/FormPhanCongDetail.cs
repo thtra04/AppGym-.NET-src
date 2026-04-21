@@ -17,12 +17,23 @@ namespace AppGym.Forms
         {
             _pc = pc;
             InitializeComponent();
-            Text = _pc == null ? "Thêm Phân công" : "Sửa Phân công";
+            Text = (_pc == null || _pc.MaPC == 0) ? "Thêm Phân công" : "Sửa Phân công";
             AddUnassignedFilter();
             LoadCombos();
             cboDangKy.SelectedIndexChanged += CboDangKy_SelectedIndexChanged;
-            if (pc != null) LoadData(pc);
-            else CboDangKy_SelectedIndexChanged(cboDangKy, EventArgs.Empty);
+            if (pc != null && pc.MaPC != 0)
+            {
+                LoadData(pc);
+            }
+            else
+            {
+                // New assignment: pre-select MaDK if caller provided one, then auto-fill dates from registration.
+                if (pc != null && pc.MaDK != 0)
+                {
+                    try { cboDangKy.SelectedValue = pc.MaDK; } catch { }
+                }
+                CboDangKy_SelectedIndexChanged(cboDangKy, EventArgs.Empty);
+            }
         }
 
         private void AddUnassignedFilter()
@@ -33,7 +44,7 @@ namespace AppGym.Forms
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9.5F),
                 Location = new Point(180, 104),
-                Checked = _pc == null
+                Checked = (_pc == null || _pc.MaPC == 0)
             };
             _chkOnlyUnassigned.CheckedChanged += (_, _) => RefreshDangKyCombo();
             Controls.Add(_chkOnlyUnassigned);
@@ -171,7 +182,7 @@ namespace AppGym.Forms
 
             try
             {
-                bool ok = _pc == null ? dao.Insert(pc) : dao.Update(pc);
+                bool ok = (_pc == null || _pc.MaPC == 0) ? dao.Insert(pc) : dao.Update(pc);
                 if (ok)
                 {
                     MessageBox.Show("Lưu thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
