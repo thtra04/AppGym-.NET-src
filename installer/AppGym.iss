@@ -12,7 +12,7 @@
 
 #define MyAppName "AppGym - Quản lý phòng Gym"
 #define MyAppShortName "AppGym"
-#define MyAppVersion "1.20.0"
+#define MyAppVersion "1.20.1"
 #define MyAppPublisher "AppGym Team"
 #define MyAppExeName "AppGym.exe"
 

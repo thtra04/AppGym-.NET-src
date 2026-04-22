@@ -5,6 +5,7 @@ namespace AppGym.Forms
 {
     public partial class FormDangKyGoiDetail : Form
     {
+        private const int PlaceholderMaGoi = 0;
         private readonly DangKyGoi? _dangKy;
         private readonly TaiKhoan _currentUser;
         private readonly List<GoiTap> _goiTapList = new();
@@ -51,10 +52,16 @@ namespace AppGym.Forms
                 cboHocVien.DataSource = hocVienList;
 
                 _goiTapList.Clear();
+                _goiTapList.Add(new GoiTap
+                {
+                    MaGoi = PlaceholderMaGoi,
+                    TenGoi = "Chọn gói tập"
+                });
                 _goiTapList.AddRange(new GoiTapDAO().GetAll());
                 cboGoiTap.DisplayMember = "TenGoi";
                 cboGoiTap.ValueMember = "MaGoi";
                 cboGoiTap.DataSource = _goiTapList;
+                if (_dangKy == null) cboGoiTap.SelectedIndex = 0;
 
                 var accountOptions = new TaiKhoanDAO().GetAll()
                     .Select(x => new
@@ -93,7 +100,8 @@ namespace AppGym.Forms
         {
             // Only auto-fill end-date when the user hasn't taken control of it yet.
             if (!_hetHanIsAutoSuggested) return;
-            if (cboGoiTap.SelectedItem is GoiTap selectedGoi && selectedGoi.ThoiHan.HasValue)
+            var selectedGoi = GetSelectedGoiTap();
+            if (selectedGoi?.ThoiHan.HasValue == true)
             {
                 _suppressHetHanChanged = true;
                 dtpHetHan.Value = dtpBatDau.Value.Date.AddDays(selectedGoi.ThoiHan.Value);
@@ -104,14 +112,17 @@ namespace AppGym.Forms
         private void UpdateThanhToanInfo()
         {
             var giaGoi = 0m;
-            if (cboGoiTap.SelectedItem is GoiTap selectedGoi)
+            var selectedGoi = GetSelectedGoiTap();
+            if (selectedGoi != null)
             {
                 giaGoi = selectedGoi.Gia ?? 0;
             }
 
             var daThanhToan = _dangKy?.DaThanhToan ?? 0m;
             var conThieu = Math.Max(giaGoi - daThanhToan, 0);
-            var trangThai = daThanhToan <= 0
+            var trangThai = selectedGoi == null
+                ? "Chưa chọn gói tập"
+                : daThanhToan <= 0
                 ? "Chưa thanh toán"
                 : conThieu > 0
                     ? $"Đã thanh toán {FormatCurrency(daThanhToan)}"
@@ -119,11 +130,13 @@ namespace AppGym.Forms
 
             lblGiaGoiValue.Text = FormatCurrency(giaGoi);
             lblDaThanhToanValue.Text = FormatCurrency(daThanhToan);
-            lblTrangThaiValue.Text = conThieu > 0 && daThanhToan > 0
+            lblTrangThaiValue.Text = selectedGoi != null && conThieu > 0 && daThanhToan > 0
                 ? $"{trangThai} - còn thiếu {FormatCurrency(conThieu)}"
                 : trangThai;
-            lblTrangThaiValue.ForeColor = conThieu <= 0 && daThanhToan > 0
-                ? Color.FromArgb(39, 174, 96)
+            lblTrangThaiValue.ForeColor = selectedGoi == null
+                ? Color.FromArgb(127, 140, 141)
+                : conThieu <= 0 && daThanhToan > 0
+                    ? Color.FromArgb(39, 174, 96)
                 : daThanhToan > 0
                     ? Color.FromArgb(243, 156, 18)
                     : Color.FromArgb(231, 76, 60);
@@ -131,9 +144,17 @@ namespace AppGym.Forms
 
         private static string FormatCurrency(decimal value) => value.ToString("#,##0") + " VNĐ";
 
+        private GoiTap? GetSelectedGoiTap()
+        {
+            return cboGoiTap.SelectedItem is GoiTap selectedGoi && selectedGoi.MaGoi != PlaceholderMaGoi
+                ? selectedGoi
+                : null;
+        }
+
         private void BtnSave_Click(object? sender, EventArgs e)
         {
-            if (cboHocVien.SelectedValue == null || cboGoiTap.SelectedValue == null || cboNguoiLap.SelectedValue == null)
+            var selectedGoi = GetSelectedGoiTap();
+            if (cboHocVien.SelectedValue == null || selectedGoi == null || cboNguoiLap.SelectedValue == null)
             {
                 MessageBox.Show("Vui lòng chọn đầy đủ thông tin!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -141,7 +162,7 @@ namespace AppGym.Forms
 
             var dangKy = _dangKy ?? new DangKyGoi();
             dangKy.MaHV = (int)cboHocVien.SelectedValue;
-            dangKy.MaGoi = (int)cboGoiTap.SelectedValue;
+            dangKy.MaGoi = selectedGoi.MaGoi;
             dangKy.MaNguoiLap = (int)cboNguoiLap.SelectedValue;
             dangKy.NgayBatDau = dtpBatDau.Value.Date;
             dangKy.NgayHetHan = dtpHetHan.Value.Date;

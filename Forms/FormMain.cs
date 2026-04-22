@@ -1,6 +1,7 @@
 ﻿using AppGym.DataAccess;
 using AppGym.Helpers;
 using AppGym.Models;
+using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 
@@ -1645,6 +1646,12 @@ namespace AppGym.Forms
             return revenue.ToString("#,##0") + "\u0111";
         }
 
+        private static bool IsForeignKeyDeleteBlock(Exception ex)
+        {
+            if (ex is SqlException sqlEx && sqlEx.Number == 547) return true;
+            return ex.InnerException != null && IsForeignKeyDeleteBlock(ex.InnerException);
+        }
+
         // ==================== HOC VIEN ====================
         private void ShowHocVien()
         {
@@ -1669,7 +1676,28 @@ namespace AppGym.Forms
             btnRefresh.Click  += (s, e) => { txtSearch.Clear(); LoadData(); };
             btnAdd.Click      += (s, e) => { if (new FormHocVienDetail(null).ShowDialog() == DialogResult.OK) LoadData(); };
             btnEdit.Click     += (s, e) => { if (dgv.CurrentRow == null) return; var hv = (HocVien)dgv.CurrentRow.DataBoundItem; if (new FormHocVienDetail(hv).ShowDialog() == DialogResult.OK) LoadData(); };
-            btnDelete.Click   += (s, e) => { if (dgv.CurrentRow == null) return; var hv = (HocVien)dgv.CurrentRow.DataBoundItem; if (MessageBox.Show($"Xóa \"{hv.HoTen}\"?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) { try { dao.Delete(hv.MaHV); LoadData(); } catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); } } };
+            btnDelete.Click   += (s, e) =>
+            {
+                if (dgv.CurrentRow == null) return;
+                var hv = (HocVien)dgv.CurrentRow.DataBoundItem;
+                if (MessageBox.Show($"Xóa \"{hv.HoTen}\"?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+
+                try
+                {
+                    dao.Delete(hv.MaHV);
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    if (IsForeignKeyDeleteBlock(ex))
+                    {
+                        MessageBox.Show("Không thể xoá.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    MessageBox.Show("Lỗi: " + ex.Message);
+                }
+            };
             ApplyPermissions(Permissions.HocVien, btnAdd, btnEdit, btnDelete);
         }
 
