@@ -15,17 +15,4 @@
     <PackageReference Include="QuestPDF" Version="2026.2.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="AppGym.Tests\**" />
-    <EmbeddedResource Remove="AppGym.Tests\**" />
-    <None Remove="AppGym.Tests\**" />
-    <Compile Remove="ExcelExporter\**" />
-    <EmbeddedResource Remove="ExcelExporter\**" />
-    <None Remove="ExcelExporter\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AppGym\AppGym.Tests\" />
-  </ItemGroup>
-
 </Project>
