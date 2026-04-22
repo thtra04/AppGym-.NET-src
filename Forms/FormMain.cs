@@ -1799,7 +1799,28 @@ namespace AppGym.Forms
             btnRefresh.Click += (s, e) => { txtSearch.Clear(); LoadData(); };
             btnAdd.Click     += (s, e) => { if (new FormDangKyGoiDetail(null, _currentUser).ShowDialog() == DialogResult.OK) LoadData(); };
             btnEdit.Click    += (s, e) => OpenSelectedDangKyEditor();
-            btnDelete.Click  += (s, e) => { if (dgv.CurrentRow == null) return; var dk = (DangKyGoi)dgv.CurrentRow.DataBoundItem; if (MessageBox.Show($"Xóa đăng ký #{dk.MaDK}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes) { try { dao.Delete(dk.MaDK); LoadData(); } catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); } } };
+            btnDelete.Click  += (s, e) =>
+            {
+                if (dgv.CurrentRow == null) return;
+                var dk = (DangKyGoi)dgv.CurrentRow.DataBoundItem;
+                if (MessageBox.Show($"Xóa đăng ký #{dk.MaDK}?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+
+                try
+                {
+                    dao.Delete(dk.MaDK);
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    if (IsForeignKeyDeleteBlock(ex))
+                    {
+                        MessageBox.Show("Không thể xóa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    MessageBox.Show("Lỗi: " + ex.Message);
+                }
+            };
             dgv.CellDoubleClick += (s, e) => { if (e.RowIndex >= 0) OpenSelectedDangKyEditor(); };
             ApplyPermissions(Permissions.DangKyGoi, btnAdd, btnEdit, btnDelete);
         }
