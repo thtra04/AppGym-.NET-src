@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+  <meta name="GENERATOR" content="Codex">
+</HEAD>
+<BODY>
+  <OBJECT type="text/site properties">
+    <param name="ImageType" value="Folder">
+  </OBJECT>
+  <UL>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Trang chu">
+        <param name="Local" value="index.html">
+      </OBJECT>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Huong dan cai dat">
+        <param name="Local" value="huong-dan-cai-dat.html">
+      </OBJECT>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Logic nghiep vu">
+        <param name="Local" value="logic-nghiep-vu.html">
+      </OBJECT>
+  </UL>
+</BODY>
+</HTML>

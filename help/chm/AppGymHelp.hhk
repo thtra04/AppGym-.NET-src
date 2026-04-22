@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+  <meta name="GENERATOR" content="Codex">
+</HEAD>
+<BODY>
+  <UL>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="AppGym">
+        <param name="Local" value="index.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Cai dat">
+        <param name="Local" value="huong-dan-cai-dat.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Database">
+        <param name="Local" value="huong-dan-cai-dat.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Dang ky goi">
+        <param name="Local" value="logic-nghiep-vu.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Hoa don">
+        <param name="Local" value="logic-nghiep-vu.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Logic nghiep vu">
+        <param name="Local" value="logic-nghiep-vu.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Phan cong PT">
+        <param name="Local" value="logic-nghiep-vu.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="SQL Server">
+        <param name="Local" value="huong-dan-cai-dat.html">
+      </OBJECT>
+    </LI>
+    <LI>
+      <OBJECT type="text/sitemap">
+        <param name="Name" value="Tai khoan">
+        <param name="Local" value="logic-nghiep-vu.html">
+      </OBJECT>
+    </LI>
+  </UL>
+</BODY>
+</HTML>

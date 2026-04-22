@@ -1,0 +1,71 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Hướng dẫn cài đặt</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">AppGym Help</div>
+      <div class="meta">Generated: 2026-04-23 02:49</div>
+    </div>
+    <h1>AppGym</h1>
+<p>AppGym la ung dung WinForms quan ly phong gym, ho tro dang nhap, hoc vien, huan luyen vien, goi tap, dang ky goi, phan cong PT, hoa don va dong goi cai dat bang Inno Setup.</p>
+<h2>Yeu Cau</h2>
+<ul>
+<li>Windows 10/11.</li>
+<li>.NET 8 SDK neu chay tu source.</li>
+<li>SQL Server Express, LocalDB hoac SQL Server Developer.</li>
+</ul>
+<h2>Cai Dat Bang Bo Setup</h2>
+<ol>
+<li>Mo file <code>installer_output\\AppGym_Setup_&lt;version&gt;.exe</code>.</li>
+<li>Cai ung dung theo wizard.</li>
+<li>Mo AppGym sau khi cai xong.</li>
+<li>Neu app chua ket noi duoc database, man hinh cau hinh SQL Server se hien ra.</li>
+<li>Chon <code>Server / Instance</code> phu hop, vi du:
+   - <code>(local)\\SQLEXPRESS</code>
+   - <code>.\\SQLEXPRESS</code>
+   - <code>(localdb)\\MSSQLLocalDB</code></li>
+<li>Giu ten database mac dinh <code>GymManagementDB</code> neu khong co yeu cau khac.</li>
+<li>Bam <code>Kiem tra</code> de thu ket noi.</li>
+<li>Neu server ket noi duoc nhung chua co database, bam <code>Tao DB moi</code>.</li>
+<li>Sau khi tao xong, bam <code>Luu &amp; Tiep tuc</code>.</li>
+</ol>
+<p>Tai khoan mac dinh sau khi tao database moi:</p>
+<ul>
+<li><code>admin</code></li>
+<li><code>admin</code></li>
+</ul>
+<h2>Chay Tu Source</h2>
+<ol>
+<li>Mo PowerShell tai thu muc goc repo <code>AppGym</code>.</li>
+<li>Restore va build:</li>
+</ol>
+<pre><code class="language-powershell">dotnet restore
+dotnet build AppGym.csproj
+</code></pre>
+<ol start="3">
+<li>Chay ung dung:</li>
+</ol>
+<pre><code class="language-powershell">dotnet run --project AppGym.csproj
+</code></pre>
+<p>Lan chay dau, neu chua co cau hinh ket noi phu hop, app se yeu cau ban cau hinh SQL Server va co the tu tao database tu <code>setup_db.sql</code>.</p>
+<h2>File Database</h2>
+<p>Repo hien co cac script ho tro database:</p>
+<ul>
+<li><code>setup_db.sql</code>: tao cau truc va du lieu khoi tao.</li>
+<li><code>reset_db.sql</code>: reset lai du lieu mau.</li>
+</ul>
+<h2>Dong Goi Setup</h2>
+<p>Neu muon tao lai bo cai:</p>
+<pre><code class="language-powershell">./build_installer.ps1
+</code></pre>
+<p>Neu <code>ISCC.exe</code> khong nam o duong dan mac dinh, truyen them tham so:</p>
+<pre><code class="language-powershell">./build_installer.ps1 -IsccPath &quot;C:\\Users\\Admin\\AppData\\Local\\Programs\\Inno Setup 6\\ISCC.exe&quot;
+</code></pre>
+<p>Chi tiet hon co the xem them trong <code>installer\\README.md</code>.</p>
+  </div>
+</body>
+</html>

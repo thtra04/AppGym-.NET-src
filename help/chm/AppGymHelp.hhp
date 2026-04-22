@@ -1,0 +1,14 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=..\..\help_output\AppGym_Help.chm
+Default topic=index.html
+Display compile progress=No
+Full-text search=No
+Language=0x409 English (United States)
+Title=AppGym Help
+
+[FILES]
+index.html
+huong-dan-cai-dat.html
+logic-nghiep-vu.html
+style.css

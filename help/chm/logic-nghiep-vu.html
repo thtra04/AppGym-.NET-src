@@ -1,0 +1,206 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Logic nghiệp vụ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">AppGym Help</div>
+      <div class="meta">Generated: 2026-04-23 02:49</div>
+    </div>
+    <h1>Logic Nghiệp Vụ AppGym</h1>
+<h2>1. Mục tiêu hệ thống</h2>
+<p>AppGym là ứng dụng quản lý phòng gym theo mô hình vận hành nội bộ, tập trung vào:</p>
+<ul>
+<li>Quản lý học viên.</li>
+<li>Quản lý huấn luyện viên.</li>
+<li>Quản lý gói tập.</li>
+<li>Đăng ký gói cho học viên.</li>
+<li>Lập hóa đơn và theo dõi thanh toán.</li>
+<li>Phân công PT cho từng đăng ký.</li>
+<li>Quản lý tài khoản và phân quyền sử dụng hệ thống.</li>
+</ul>
+<h2>2. Cấu hình và khởi động</h2>
+<ul>
+<li>Khi mở ứng dụng, hệ thống đọc cấu hình kết nối SQL Server đã lưu.</li>
+<li>Nếu kết nối thất bại, ứng dụng mở màn hình cấu hình database để người dùng chọn server, kiểm tra kết nối và có thể tự tạo database mới.</li>
+<li>Khi tạo database mới, hệ thống nạp script khởi tạo và sinh tài khoản mặc định:</li>
+<li><code>admin</code></li>
+<li><code>admin</code></li>
+</ul>
+<h2>3. Vai trò người dùng</h2>
+<p>Hệ thống hiện có 3 vai trò chính:</p>
+<ul>
+<li><code>Admin</code></li>
+<li>Toàn quyền trên tất cả chức năng.</li>
+<li>Có thể quản lý tài khoản.</li>
+<li>
+<p>Có thể phân quyền cho tài khoản khác.</p>
+</li>
+<li>
+<p><code>QuanLy</code></p>
+</li>
+<li>Có toàn quyền ngầm định trên các module vận hành.</li>
+<li>Có thể quản lý tài khoản nhân viên.</li>
+<li>
+<p>Không có quyền phân quyền như Admin.</p>
+</li>
+<li>
+<p><code>NhanVien</code></p>
+</li>
+<li>Chỉ được dùng các module đã được cấp quyền trong bảng phân quyền.</li>
+</ul>
+<h2>4. Các thực thể nghiệp vụ chính</h2>
+<ul>
+<li><code>TaiKhoan</code></li>
+<li>Dùng để đăng nhập hệ thống.</li>
+<li>
+<p>Có vai trò, trạng thái hoạt động và thông tin người dùng.</p>
+</li>
+<li>
+<p><code>HocVien</code></p>
+</li>
+<li>Là khách hàng đăng ký tập.</li>
+<li>
+<p>Có thể phát sinh nhiều đăng ký gói theo thời gian.</p>
+</li>
+<li>
+<p><code>HuanLuyenVien</code></p>
+</li>
+<li>
+<p>Là PT được phân công cho học viên.</p>
+</li>
+<li>
+<p><code>GoiTap</code></p>
+</li>
+<li>
+<p>Chứa tên gói, thời hạn và giá.</p>
+</li>
+<li>
+<p><code>DangKyGoi</code></p>
+</li>
+<li>Liên kết giữa học viên và gói tập.</li>
+<li>
+<p>Là bản ghi trung tâm để theo dõi thời gian tập, thanh toán và phân công PT.</p>
+</li>
+<li>
+<p><code>HoaDon</code></p>
+</li>
+<li>
+<p>Ghi nhận tiền đã thanh toán cho một đăng ký gói.</p>
+</li>
+<li>
+<p><code>PhanCong</code></p>
+</li>
+<li>
+<p>Ghi nhận việc gán PT cho một đăng ký gói.</p>
+</li>
+<li>
+<p><code>CaLam</code></p>
+</li>
+<li>Quản lý ca làm việc phục vụ cho phân công PT.</li>
+</ul>
+<h2>5. Quan hệ dữ liệu</h2>
+<ul>
+<li>Một <code>HocVien</code> có thể có nhiều <code>DangKyGoi</code>.</li>
+<li>Một <code>GoiTap</code> có thể được nhiều học viên đăng ký.</li>
+<li>Một <code>DangKyGoi</code> có thể có nhiều <code>HoaDon</code>.</li>
+<li>Một <code>DangKyGoi</code> chỉ được phép có tối đa 1 <code>PhanCong</code>.</li>
+<li>Ràng buộc này được giữ cả ở logic ứng dụng lẫn unique index <code>UX_PhanCong_MaDK</code>.</li>
+<li>Một <code>PhanCong</code> gắn với:</li>
+<li>1 huấn luyện viên</li>
+<li>1 đăng ký gói</li>
+<li>0 hoặc 1 ca làm</li>
+</ul>
+<h2>6. Luồng nghiệp vụ chính</h2>
+<h3>6.1. Đăng nhập</h3>
+<ul>
+<li>Người dùng đăng nhập bằng <code>Tên đăng nhập</code> và <code>Mật khẩu</code>.</li>
+<li>Hệ thống chỉ cho đăng nhập các tài khoản đang hoạt động.</li>
+<li>Mật khẩu được kiểm tra bằng hash <code>SHA2_512</code> kết hợp <code>Salt</code>.</li>
+</ul>
+<h3>6.2. Quản lý học viên</h3>
+<ul>
+<li>Có thể thêm, sửa và tìm kiếm học viên.</li>
+<li>Không cho phép xóa học viên khi vẫn còn dữ liệu liên quan như đăng ký gói.</li>
+<li>Trong tình huống bị khóa ngoại, hệ thống hiện thông báo ngắn gọn thay vì bung lỗi SQL thô.</li>
+</ul>
+<h3>6.3. Quản lý gói tập</h3>
+<ul>
+<li>Gói tập có các thuộc tính chính:</li>
+<li>Tên gói</li>
+<li>Thời hạn</li>
+<li>Giá</li>
+<li>Mô tả</li>
+<li>Gói tập được dùng để tạo đăng ký cho học viên.</li>
+</ul>
+<h3>6.4. Đăng ký gói</h3>
+<ul>
+<li>Khi tạo đăng ký mới, người dùng phải chọn:</li>
+<li>Học viên</li>
+<li>Gói tập</li>
+<li>Người lập</li>
+<li>Ngày hết hạn được gợi ý từ:</li>
+<li><code>Ngày bắt đầu</code></li>
+<li><code>Thời hạn</code> của gói tập</li>
+<li>Nếu chưa chọn gói tập, hệ thống không cho lưu đăng ký.</li>
+<li>Màn hình đăng ký hiển thị thêm trạng thái thanh toán của từng đăng ký:</li>
+<li>Chưa thanh toán</li>
+<li>Thanh toán một phần</li>
+<li>Đã thanh toán đủ</li>
+</ul>
+<h3>6.5. Hóa đơn và thanh toán</h3>
+<ul>
+<li>Mỗi hóa đơn gắn với 1 đăng ký gói.</li>
+<li>Một đăng ký gói có thể thanh toán nhiều lần.</li>
+<li>Tổng số tiền đã thanh toán được cộng dồn từ các hóa đơn.</li>
+<li>Số tiền còn thiếu được tính theo:</li>
+<li><code>Giá gói - Tổng đã thanh toán</code></li>
+<li>Hệ thống có thể truy xuất danh sách chưa thanh toán hoặc thanh toán chưa đủ.</li>
+</ul>
+<h3>6.6. Phân công PT</h3>
+<ul>
+<li>Chỉ các đăng ký chưa có PT mới được đưa vào danh sách chờ phân công.</li>
+<li>Mỗi đăng ký gói chỉ được phân công tối đa 1 PT.</li>
+<li>Khi sửa phân công, hệ thống vẫn kiểm tra để không tạo trùng PT trên cùng một đăng ký.</li>
+</ul>
+<h3>6.7. Quản lý tài khoản</h3>
+<ul>
+<li>Tài khoản có thể được thêm, sửa, khóa hoặc đổi mật khẩu.</li>
+<li>Không cho phép xóa tùy tiện tài khoản đã phát sinh nghiệp vụ.</li>
+<li>Nếu tài khoản đã tham gia lập đăng ký hoặc hóa đơn, hướng xử lý nghiệp vụ là khóa tài khoản thay vì xóa.</li>
+</ul>
+<h2>7. Quy tắc nghiệp vụ quan trọng</h2>
+<ul>
+<li>Không cho phép lưu đăng ký gói nếu thiếu học viên, gói tập hoặc người lập.</li>
+<li>Ngày hết hạn không được nhỏ hơn ngày bắt đầu.</li>
+<li>Một đăng ký gói chỉ có tối đa 1 PT.</li>
+<li>Không thể xóa dữ liệu cha khi vẫn còn dữ liệu con tham chiếu bằng khóa ngoại.</li>
+<li>Trạng thái thanh toán của đăng ký gói được suy ra từ tổng hóa đơn, không nhập tay.</li>
+<li><code>QuanLy</code> có quyền vận hành rộng, nhưng quyền phân quyền chỉ thuộc <code>Admin</code>.</li>
+</ul>
+<h2>8. Dashboard và theo dõi vận hành</h2>
+<p>Phần tổng quan phục vụ theo dõi vận hành, gồm các nhóm thông tin như:</p>
+<ul>
+<li>Số lượng học viên.</li>
+<li>Số lượng huấn luyện viên.</li>
+<li>Số gói tập đang kinh doanh.</li>
+<li>Số đăng ký hiện có.</li>
+<li>Tình hình doanh thu và thanh toán.</li>
+<li>Trạng thái đăng ký hoặc phân bố theo gói tập.</li>
+</ul>
+<h2>9. Tóm tắt logic trung tâm</h2>
+<p>Trục nghiệp vụ chính của hệ thống là:</p>
+<p><code>HocVien -&gt; DangKyGoi -&gt; HoaDon / PhanCong</code></p>
+<p>Nghĩa là:</p>
+<ul>
+<li>Học viên đăng ký một gói tập.</li>
+<li>Từ đăng ký đó phát sinh thanh toán qua hóa đơn.</li>
+<li>Cũng từ đăng ký đó có thể phát sinh phân công PT.</li>
+<li>Các ràng buộc khóa ngoại giúp giữ tính nhất quán dữ liệu trong toàn bộ hệ thống.</li>
+</ul>
+  </div>
+</body>
+</html>
